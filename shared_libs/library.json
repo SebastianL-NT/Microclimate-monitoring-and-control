@@ -1,0 +1,6 @@
+{
+    "$schema": "https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/schema/library.json",
+    "name" : "shared_libs",
+    "version" : "1.0.0",
+    "frameworks": "espidf"
+}
