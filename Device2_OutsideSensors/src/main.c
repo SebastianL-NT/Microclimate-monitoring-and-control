@@ -18,7 +18,7 @@ Core 1 - sensors, uart, led, gpio and other not time-based functions
 #include "main.h"
 #include "bmp280.h"
 #include "ath20.h"
-//TODO #include "bh1750.h"
+#include "bh1750.h"
 #include "i2c.h"
 #include "connection.h"
 
@@ -26,12 +26,14 @@ Core 1 - sensors, uart, led, gpio and other not time-based functions
 static const char *TAG = "MAIN";
 static uart_config_t uart_settings;
 static QueueHandle_t uart_queue;
+static bh1750_handle_t bh1750;
 
 // Functions prototypes
 esp_err_t uartInit();
 static void hearthbeatLED(void *pvParameter);
 static void taskCheckATH20(void *pvParameter);
 static void taskCheckBMP280(void *pvParameter);
+void taskCheckBH1750(void *pvParameter);
 void taskInitWifi(void *pvParameter);
 void initGPIOout(uint16_t pinNumber, uint32_t state);
 
@@ -56,9 +58,11 @@ void app_main()
     taskInitWifi(NULL);
     mqttClientStart();  // Init MQTT Client
     ESP_ERROR_CHECK(i2c_init(I2C_PORT_NUM));    // I2C Setup
-    ESP_ERROR_CHECK_WITHOUT_ABORT(ath20_init(I2C_PORT_NUM));  // Init ATH20
-    ESP_ERROR_CHECK_WITHOUT_ABORT(bmp280_init(I2C_PORT_NUM)); // Init BMP280
-    // TODO // Init DH1750
+    ESP_ERROR_CHECK(ath20_init(I2C_PORT_NUM));  // Init ATH20
+    ESP_ERROR_CHECK(bmp280_init(I2C_PORT_NUM)); // Init BMP280
+    bh1750 = bh1750_create(I2C_PORT_NUM, BH1750_I2C_ADDRESS_DEFAULT); // Init DH1750
+    bh1750_power_on(bh1750);
+    bh1750_set_measure_mode(bh1750, BH1750_CONTINUE_1LX_RES);
 
     // Start of heartbeat LED
     xTaskCreatePinnedToCore(&hearthbeatLED, "hearthbeatLED", 2048, NULL, tskIDLE_PRIORITY, NULL, APP_CPU_NUM);
@@ -67,7 +71,7 @@ void app_main()
     // Read data continuosly
     xTaskCreatePinnedToCore(&taskCheckATH20, "taskCheckATH20", 2048, NULL, tskIDLE_PRIORITY, NULL, APP_CPU_NUM);
     xTaskCreatePinnedToCore(&taskCheckBMP280, "taskCheckBMP280", 2048, NULL, tskIDLE_PRIORITY, NULL, APP_CPU_NUM);
-    // TODO: Task for measuring daylight
+    xTaskCreatePinnedToCore(&taskCheckBH1750, "taskCheckBH1750", 2048, NULL, tskIDLE_PRIORITY, NULL, APP_CPU_NUM);
 
     while (1)
     {
@@ -167,7 +171,19 @@ void taskInitWifi(void *pvParameter)
     ESP_LOGI(TAG, "WIFI INIT OKEY\n\r");
 }
 
-void taskInitBH1750(void *pvParameter)
+void taskCheckBH1750(void *pvParameter)
 {
-    
+    while (true)
+    {
+        float lux;
+        char message[7];
+
+        bh1750_get_data(bh1750, &lux);
+        ESP_LOGI(TAG, "BH1750 - Lux: %f", lux);
+
+        sprintf(message, "%6.0f", lux);
+        mqttPublish("outside/bh1750/lux", message);
+
+        vTaskDelay(BH1750_DELAY / portTICK_PERIOD_MS);
+    }
 }

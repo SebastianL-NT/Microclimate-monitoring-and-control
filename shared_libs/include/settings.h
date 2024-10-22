@@ -34,6 +34,10 @@ Written by PLSBX
 // Task delays
 #define ATH20_DELAY 2000
 #define BMP280_DELAY 2000
+#define BH1750_DELAY 2000
+
+// ADC Settings
+#define ADC_BUFFER_LEN 64
 
 // ESP Status check macro
 #define err_check( status ) if(status != ESP_OK) { return ESP_FAIL; }
