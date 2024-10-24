@@ -1,5 +1,5 @@
 /* Some informations:
-Author: Sebastian Łuczak
+Author: https://github.com/SebastianL-NT
 
 Tech info:
 Core 0 - wifi conn, mqtt and events related
@@ -60,7 +60,7 @@ void app_main()
     ESP_ERROR_CHECK(i2c_init(I2C_PORT_NUM));    // I2C Setup
     ESP_ERROR_CHECK(ath20_init(I2C_PORT_NUM));  // Init ATH20
     ESP_ERROR_CHECK(bmp280_init(I2C_PORT_NUM)); // Init BMP280
-    bh1750 = bh1750_create(I2C_PORT_NUM, BH1750_I2C_ADDRESS_DEFAULT); // Init DH1750
+    bh1750 = bh1750_create(I2C_PORT_NUM, 0x5C); // Init DH1750
     bh1750_power_on(bh1750);
     bh1750_set_measure_mode(bh1750, BH1750_CONTINUE_1LX_RES);
 
@@ -133,12 +133,12 @@ static void taskCheckATH20(void *pvParameter)
         char message[6];
 
         ath20_read(I2C_PORT_NUM, &temperature, &humidity);
-        ESP_LOGI(TAG, "ATH20 - Temp: %f, Hum: %f", temperature, humidity);
+        ESP_LOGI(TAG, "ATH20 - Temp: %.1f, Hum: %.1f", temperature, humidity);
         
-        sprintf(message, "%2.1f", temperature);
-        mqttPublish("outside/ath20/temp", message);
-        sprintf(message, "%2.1f", humidity);
-        mqttPublish("outside/ath20/hum", message);
+        sprintf(message, "%.1f", temperature);
+        mqttPublish("inside/ath20/temp", message);
+        sprintf(message, "%.1f", humidity);
+        mqttPublish("inside/ath20/hum", message);
         vTaskDelay(ATH20_DELAY / portTICK_PERIOD_MS);
     }
 }
@@ -152,12 +152,12 @@ static void taskCheckBMP280(void *pvParameter)
         char message[7];
 
         bmp280_read(I2C_PORT_NUM, &temperature, &pressure);
-        ESP_LOGI(TAG, "BMP280 - Temp: %f, Press: %f", temperature, pressure);
+        ESP_LOGI(TAG, "BMP280 - Temp: %.1f, Press: %.1f", temperature, pressure);
 
-        sprintf(message, "%2.1f", temperature);
-        mqttPublish("outside/bmp280/temp", message);
-        sprintf(message, "%4.1f", pressure);
-        mqttPublish("outside/bmp280/press", message);
+        sprintf(message, "%.1f", temperature);
+        mqttPublish("inside/bmp280/temp", message);
+        sprintf(message, "%.1f", pressure);
+        mqttPublish("inside/bmp280/press", message);
         vTaskDelay(BMP280_DELAY / portTICK_PERIOD_MS);
     }
 }

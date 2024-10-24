@@ -1,7 +1,7 @@
 /*
 I2C controll instructions
 
-written by PLSBX
+Author: https://github.com/SebastianL-NT
 */
 #ifndef I2C_H
 #define I2C_H

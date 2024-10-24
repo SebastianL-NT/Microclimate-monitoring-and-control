@@ -1,7 +1,7 @@
 /*
 It is libary to communicate with BMP280 sensor
 
-written by PLSBX
+Author: https://github.com/SebastianL-NT
 */
 #ifndef BMP280_h
 #define BMP280_h

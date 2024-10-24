@@ -1,7 +1,7 @@
 /*
 It is libary to communicate with ATH20 sensor
 
-written by PLSBX
+Author: https://github.com/SebastianL-NT
 */
 #ifndef ATH20_H
 #define ATH20_H

@@ -1,7 +1,7 @@
 /*
 Common settings for projects
 
-Written by PLSBX
+Author: https://github.com/SebastianL-NT
 */
 #ifndef SETTINGS_H
 #define SETTINGS_H
@@ -17,19 +17,20 @@ Written by PLSBX
 
 // NORMAL GPIO SETTINGS
 #define PIN_LED 22 // GPIO22
+#define PIN_AIR_EN 12
 
 // I2C SETTINGS
 #define I2C_PORT_NUM 0
 
 // WIFI Settings
-#define WIFI_SSID "mywifi"
-#define WIFI_PASSWORD "mypassword"
+#define WIFI_SSID "Test-wifi"
+#define WIFI_PASSWORD "Test-pwd"
 #define WIFI_CONNECTED_BIT BIT0
 #define WIFI_FAIL_BIT      BIT1
 #define EXAMPLE_ESP_MAXIMUM_RETRY  10
 
 // MQTT Settings
-#define CONFIG_BROKER_URL "mqtt://192.168.1.12/"
+#define CONFIG_BROKER_URL "mqtt://192.168.185.197/"
 
 // Task delays
 #define ATH20_DELAY 2000
@@ -38,6 +39,9 @@ Written by PLSBX
 
 // ADC Settings
 #define ADC_BUFFER_LEN 64
+
+// Display settings
+#define DISPLAY_HZ 0.2 // In Hertz (updates per second), Because I'm using same interface for sensors and display I need to keep my display at low Hz
 
 // ESP Status check macro
 #define err_check( status ) if(status != ESP_OK) { return ESP_FAIL; }

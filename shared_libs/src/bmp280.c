@@ -2,7 +2,7 @@
 It is libary to communicate with BMP280 sensor.
 It will use force mode in sensor.
 
-written by PLSBX
+Author: https://github.com/SebastianL-NT
 */
 // Includes
 #include "bmp280.h"

@@ -2,7 +2,7 @@
 It is libary for easier use of WIFI
 Based on: https://github.com/espressif/esp-idf/blob/v5.3.1/examples/wifi/getting_started/station/main/station_example_main.c
 
-Written by PLSBX
+Author: https://github.com/SebastianL-NT
 */
 
 // Includes
@@ -70,7 +70,7 @@ esp_err_t mqttClientStart() {
 
 void mqttPublish(char *topic, char *data)
 {
-    esp_mqtt_client_publish(mqttClient, topic, data, strlen(data), 1, true);
+    esp_mqtt_client_publish(mqttClient, topic, data, strlen(data), 0, true);
 }
 
 // Private functions

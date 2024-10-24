@@ -1,7 +1,7 @@
 /*
 It is libary for easier use of WIFI
 
-Written by PLSBX
+Author: https://github.com/SebastianL-NT
 */
 #ifndef CONNECTION_H
 #define CONNECTION_H

@@ -1,7 +1,7 @@
 /*
 I2C controll instructions
 
-written by PLSBX
+Author: https://github.com/SebastianL-NT
 */
 
 // Includes
