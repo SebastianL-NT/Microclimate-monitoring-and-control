@@ -20,12 +20,13 @@ Author: https://github.com/SebastianL-NT
 #include "lwip/sockets.h"
 #include "lwip/dns.h"
 #include "lwip/netdb.h"
+#include "esp_err.h"
 
 // Public functions
 esp_err_t wifiInit();
 esp_err_t mqttClientStart();
 void mqttPublish(char *topic, char *data);
 
-// Public variables
+extern esp_err_t mqtt_ret;
 
 #endif

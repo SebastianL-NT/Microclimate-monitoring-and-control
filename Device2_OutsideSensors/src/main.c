@@ -27,6 +27,7 @@ static const char *TAG = "MAIN";
 static uart_config_t uart_settings;
 static QueueHandle_t uart_queue;
 static bh1750_handle_t bh1750;
+uint64_t uptime = 0;
 
 // Functions prototypes
 esp_err_t uartInit();
@@ -40,6 +41,7 @@ void initGPIOout(uint16_t pinNumber, uint32_t state);
 // Main
 void app_main()
 {
+    static char uptime_str[65];
     // INIT SECTION -----------------------------
     vTaskDelay(1000 / portTICK_PERIOD_MS); // Just wait
     initGPIOout(PIN_LED, 0);
@@ -75,8 +77,11 @@ void app_main()
 
     while (1)
     {
-        vTaskDelay( 1000 / portTICK_PERIOD_MS );
-        ESP_LOGI( TAG, "HEARTHBEAT");
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        uptime += 1;
+        ESP_LOGI(TAG, "HEARTHBEAT");
+        sprintf(uptime_str, "%llu", uptime);
+        mqttPublish("outside/uptime", uptime_str);
     }
 }
 
@@ -85,7 +90,7 @@ void app_main()
 esp_err_t uartInit()
 {
     // uart_config_t uart_settings;
-    uart_settings.baud_rate = 9600;
+    uart_settings.baud_rate = 115200;
     uart_settings.data_bits = UART_DATA_8_BITS;
     uart_settings.parity = UART_PARITY_DISABLE;
     uart_settings.stop_bits = UART_STOP_BITS_1;
@@ -136,9 +141,9 @@ static void taskCheckATH20(void *pvParameter)
         ESP_LOGI(TAG, "ATH20 - Temp: %.1f, Hum: %.1f", temperature, humidity);
         
         sprintf(message, "%.1f", temperature);
-        mqttPublish("inside/ath20/temp", message);
+        mqttPublish("outside/ath20/temp", message);
         sprintf(message, "%.1f", humidity);
-        mqttPublish("inside/ath20/hum", message);
+        mqttPublish("outside/ath20/hum", message);
         vTaskDelay(ATH20_DELAY / portTICK_PERIOD_MS);
     }
 }
@@ -155,9 +160,9 @@ static void taskCheckBMP280(void *pvParameter)
         ESP_LOGI(TAG, "BMP280 - Temp: %.1f, Press: %.1f", temperature, pressure);
 
         sprintf(message, "%.1f", temperature);
-        mqttPublish("inside/bmp280/temp", message);
+        mqttPublish("outside/bmp280/temp", message);
         sprintf(message, "%.1f", pressure);
-        mqttPublish("inside/bmp280/press", message);
+        mqttPublish("outside/bmp280/press", message);
         vTaskDelay(BMP280_DELAY / portTICK_PERIOD_MS);
     }
 }

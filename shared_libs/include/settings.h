@@ -17,7 +17,7 @@ Author: https://github.com/SebastianL-NT
 
 // NORMAL GPIO SETTINGS
 #define PIN_LED 22 // GPIO22
-#define PIN_AIR_EN 12
+//#define PIN_AIR_EN 34
 
 // I2C SETTINGS
 #define I2C_PORT_NUM 0
@@ -30,15 +30,15 @@ Author: https://github.com/SebastianL-NT
 #define EXAMPLE_ESP_MAXIMUM_RETRY  10
 
 // MQTT Settings
-#define CONFIG_BROKER_URL "mqtt://192.168.185.197/"
+#define CONFIG_BROKER_URL "mqtt://some-ip/"
 
 // Task delays
-#define ATH20_DELAY 2000
-#define BMP280_DELAY 2000
-#define BH1750_DELAY 2000
+#define ATH20_DELAY 1000
+#define BMP280_DELAY 5000
+#define BH1750_DELAY 1000
 
 // ADC Settings
-#define ADC_BUFFER_LEN 64
+#define ADC_BUFFER_LEN 256
 
 // Display settings
 #define DISPLAY_HZ 0.2 // In Hertz (updates per second), Because I'm using same interface for sensors and display I need to keep my display at low Hz

@@ -147,6 +147,8 @@ void task_ssd1306_display_text(const void *arg_text) {
 
 	uint8_t cur_page = 0;
 
+	ext_i2c_busy = 1; // ADDED
+
 	cmd = i2c_cmd_link_create();
 	i2c_master_start(cmd);
 	i2c_master_write_byte(cmd, (OLED_I2C_ADDRESS << 1) | I2C_MASTER_WRITE, true);
@@ -187,6 +189,8 @@ void task_ssd1306_display_text(const void *arg_text) {
 			i2c_cmd_link_delete(cmd);
 		}
 	}
+
+	ext_i2c_busy = 0; // ADDED
 
 	vTaskDelete(NULL);
 }

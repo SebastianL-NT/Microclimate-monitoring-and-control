@@ -28,19 +28,22 @@ Core 1 - sensors, uart, led, gpio and other not time-based functions
 static const char *TAG = "MAIN";
 uart_config_t uart_settings;
 QueueHandle_t uart_queue;
-adc_continuous_handle_cfg_t adc_init_config = {
+/*adc_continuous_handle_cfg_t adc_init_config = {
     .max_store_buf_size = 1024,
     .conv_frame_size = ADC_BUFFER_LEN
 };
 static adc_continuous_handle_t adc_handle;
 adc_continuous_config_t adc_config;
 adc_digi_pattern_config_t adc_digi_conf[SOC_ADC_PATT_LEN_MAX] = {0};
-adc_channel_t adc_channel = ADC_CHANNEL_4;
 static TaskHandle_t s_task_handle;
 static uint8_t adc_results[ADC_BUFFER_LEN] = {0};
 static adc_continuous_evt_cbs_t adc_cbs; // ?
-adc_cali_handle_t adc_cali_handle;
+adc_cali_handle_t adc_cali_handle;*/
 float bmp280_temp, bmp280_press, ath20_temp, ath20_hum = 0;
+SemaphoreHandle_t i2c_semaphore = NULL;
+int task_queue = 0;
+uint8_t dispLastRun = 0;
+uint64_t uptime = 0;
 
 // Functions prototypes
 esp_err_t uartInit();
@@ -48,7 +51,7 @@ void uartSend(void *uartTX);
 void hearthbeatLED(void *pvParameter);
 static void taskCheckATH20(void *pvParameter);
 static void taskCheckBMP280(void *pvParameter);
-static void taskCheckAIR(void *pvParameter);
+//static void taskCheckAIR(void *pvParameter);
 static void taskDisplay(void *pvParameter);
 void taskInitWifi(void *pvParameter);
 void initGPIOout(uint16_t pinNumber, uint32_t state);
@@ -57,11 +60,22 @@ static bool IRAM_ATTR s_conv_done_cb(adc_continuous_handle_t handle, const adc_c
 // Main
 void app_main()
 {
+    static char uptime_str[65];
     // INIT SECTION -----------------------------
     vTaskDelay(1000 / portTICK_PERIOD_MS); // Just wait
-    initGPIOout(PIN_LED, 0); // Init LED with state 1
+    initGPIOout(PIN_LED, 0);               // Init LED with state 1
     uartInit();
     ESP_LOGI(TAG, "INIT START");
+
+    // Init I2C and related sensors (moved before WIFI just to have nice start-up screen longer)
+    ESP_ERROR_CHECK(i2c_init(I2C_PORT_NUM));    // I2C Setup
+    ESP_ERROR_CHECK(ath20_init(I2C_PORT_NUM));  // Init ATH20
+    ESP_ERROR_CHECK(bmp280_init(I2C_PORT_NUM)); // Init BMP280
+    ESP_ERROR_CHECK(ssd1306_init()); // Init oled screen
+    xTaskCreate(&task_ssd1306_display_clear, "ssd1306_display_clear", 2048, NULL, 6, NULL);
+    vTaskDelay(100 / portTICK_PERIOD_MS);
+    xTaskCreate(&task_ssd1306_display_text, "ssd1306_display_text", 2048, (void *)"Inside Sensor\nStart up", 6, NULL);
+
     // Init NVS
     esp_err_t nvs_return = nvs_flash_init();
     if (nvs_return == ESP_ERR_NVS_NO_FREE_PAGES || nvs_return == ESP_ERR_NVS_NEW_VERSION_FOUND)
@@ -72,35 +86,23 @@ void app_main()
     ESP_ERROR_CHECK(nvs_return);
     // Init WIFI
     taskInitWifi(NULL);
-    ESP_ERROR_CHECK(mqttClientStart());  // Init MQTT Client
-    
-    // Init I2C and related sensors
-    ESP_ERROR_CHECK(i2c_init(I2C_PORT_NUM));    // I2C Setup
-    ESP_ERROR_CHECK(ath20_init(I2C_PORT_NUM));  // Init ATH20
-    ESP_ERROR_CHECK(bmp280_init(I2C_PORT_NUM)); // Init BMP280
-    ESP_ERROR_CHECK(ssd1306_init());
-    xTaskCreate(&task_ssd1306_display_clear, "ssd1306_display_clear",  2048, NULL, 6, NULL);
-    vTaskDelay(100/portTICK_PERIOD_MS);
-	//xTaskCreate(&task_ssd1306_display_text, "ssd1306_display_text",  2048, (void *)"Hello world!\nMulitine is OK!\nAnother line", 6, NULL);
-    xTaskCreate(&task_ssd1306_display_text, "ssd1306_display_text",  2048, (void *)"Inside Sensor\nStart up", 6, NULL);
-	//xTaskCreate(&task_ssd1306_contrast, "ssid1306_contrast", 2048, NULL, 6, NULL);
-	//xTaskCreate(&task_ssd1306_scroll, "ssid1306_scroll", 2048, NULL, 6, NULL);
+    ESP_ERROR_CHECK(mqttClientStart()); // Init MQTT Client
 
     // Init ADC for Air quality sensor
-    adc_cali_line_fitting_config_t adc_cali_cfg = {
+    /*adc_cali_line_fitting_config_t adc_cali_cfg = {
         .unit_id = ADC_UNIT_1,
         .atten = ADC_ATTEN_DB_0,
         .bitwidth = SOC_ADC_DIGI_MAX_BITWIDTH
     };
     ESP_ERROR_CHECK(adc_cali_create_scheme_line_fitting(&adc_cali_cfg, &adc_cali_handle));
-    initGPIOout(PIN_AIR_EN, 0); // Init LED with state 1
+    //initGPIOout(PIN_AIR_EN, 0); // Init LED with state 1
     s_task_handle = xTaskGetCurrentTaskHandle();
     memset(adc_results, 0xCC, ADC_BUFFER_LEN);
 
     ESP_ERROR_CHECK(adc_continuous_new_handle(&adc_init_config, &adc_handle));
 
     adc_digi_conf[0].atten = ADC_ATTEN_DB_0;
-    adc_digi_conf[0].channel = adc_channel & 0x7;
+    adc_digi_conf[0].channel = ADC_CHANNEL_5 & 0x7;
     adc_digi_conf[0].unit = ADC_UNIT_1;
     adc_digi_conf[0].bit_width = SOC_ADC_DIGI_MAX_BITWIDTH;
 
@@ -114,24 +116,29 @@ void app_main()
     adc_cbs.on_conv_done = s_conv_done_cb;
 
     ESP_ERROR_CHECK(adc_continuous_register_event_callbacks(adc_handle, &adc_cbs, NULL));
-    ESP_ERROR_CHECK(adc_continuous_start(adc_handle)); 
+    ESP_ERROR_CHECK(adc_continuous_start(adc_handle)); */
 
-    // Start of heartbeat LED
-    xTaskCreatePinnedToCore(&hearthbeatLED, "hearthbeatLED", 2048, NULL, tskIDLE_PRIORITY, NULL, APP_CPU_NUM);
+    xTaskCreatePinnedToCore(&hearthbeatLED, "hearthbeatLED", 2048, NULL, tskIDLE_PRIORITY, NULL, APP_CPU_NUM); // Start of heartbeat LED
+
+    i2c_semaphore = xSemaphoreCreateBinary(); // Create semaphore to sync tasks (mostly to avoid interrupts between sensors and display)
+    xSemaphoreGive(i2c_semaphore);
     ESP_LOGI(TAG, "INIT END");
     // INIT END -------------------------------
-    vTaskDelay(100/portTICK_PERIOD_MS);
+    vTaskDelay(100 / portTICK_PERIOD_MS);
 
     // Read data continuosly
     xTaskCreatePinnedToCore(&taskCheckATH20, "taskCheckATH20", 2048, NULL, tskIDLE_PRIORITY, NULL, APP_CPU_NUM);
     xTaskCreatePinnedToCore(&taskCheckBMP280, "taskCheckBMP280", 2048, NULL, tskIDLE_PRIORITY, NULL, APP_CPU_NUM);
-    xTaskCreatePinnedToCore(&taskCheckAIR, "taskCheckAIR", 2048, NULL, tskIDLE_PRIORITY, NULL, APP_CPU_NUM);
+    // xTaskCreatePinnedToCore(&taskCheckAIR, "taskCheckAIR", 2048, NULL, tskIDLE_PRIORITY, NULL, APP_CPU_NUM);
     xTaskCreatePinnedToCore(&taskDisplay, "taskDisplay", 2048, NULL, tskIDLE_PRIORITY, NULL, APP_CPU_NUM);
 
     while (1)
     {
-        vTaskDelay( 1000 / portTICK_PERIOD_MS );
-        ESP_LOGI( TAG, "HEARTHBEAT");
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        uptime += 1;
+        ESP_LOGI(TAG, "HEARTHBEAT");
+        sprintf(uptime_str, "%llu", uptime);
+        mqttPublish("inside/uptime", uptime_str);
     }
 }
 
@@ -140,8 +147,8 @@ void app_main()
 esp_err_t uartInit()
 {
     // uart_config_t uart_settings;
-    uart_settings.baud_rate = 9600;
-    uart_settings.data_bits = UART_DATA_8_BITS; // TODO: Check
+    uart_settings.baud_rate = 115200;
+    uart_settings.data_bits = UART_DATA_8_BITS;
     uart_settings.parity = UART_PARITY_DISABLE;
     uart_settings.stop_bits = UART_STOP_BITS_1;
     uart_settings.flow_ctrl = UART_HW_FLOWCTRL_DISABLE;
@@ -188,34 +195,44 @@ void hearthbeatLED(void *pvParameter)
 }
 
 // ADC Functions
-static bool IRAM_ATTR s_conv_done_cb(adc_continuous_handle_t handle, const adc_continuous_evt_data_t *edata, void *user_data)
+/*static bool IRAM_ATTR s_conv_done_cb(adc_continuous_handle_t handle, const adc_continuous_evt_data_t *edata, void *user_data)
 {
     BaseType_t mustYield = pdFALSE;
     //Notify that ADC continuous driver has done enough number of conversions
     vTaskNotifyGiveFromISR(s_task_handle, &mustYield);
 
     return (mustYield == pdTRUE);
-}
+}*/
 
 // Tasks Functions
 static void taskCheckATH20(void *pvParameter)
 {
     while (true)
     {
-        float temperature;
-        float humidity;
-        char message[6];
+        if (i2c_semaphore != NULL)
+        {
+            if (xSemaphoreTake(i2c_semaphore, 1000 / portTICK_PERIOD_MS) == pdTRUE)
+            {
+                float temperature;
+                float humidity;
+                char message[6];
 
-        ath20_read(I2C_PORT_NUM, &temperature, &humidity);
-        ESP_LOGI(TAG, "ATH20 - Temp: %.1f, Hum: %.1f", temperature, humidity);
-        ath20_temp = temperature;
-        ath20_hum = humidity;
-        
-        sprintf(message, "%.1f", temperature);
-        mqttPublish("inside/ath20/temp", message);
-        sprintf(message, "%.1f", humidity);
-        mqttPublish("inside/ath20/hum", message);
-        vTaskDelay(ATH20_DELAY / portTICK_PERIOD_MS);
+                ath20_read(I2C_PORT_NUM, &temperature, &humidity);
+                ESP_LOGI(TAG, "ATH20 - Temp: %.1f, Hum: %.1f", temperature, humidity);
+                ath20_temp = temperature;
+                ath20_hum = humidity;
+
+                sprintf(message, "%.1f", temperature);
+                mqttPublish("inside/ath20/temp", message);
+                sprintf(message, "%.1f", humidity);
+                mqttPublish("inside/ath20/hum", message);
+
+                dispLastRun = 0;
+                xSemaphoreGive(i2c_semaphore);
+
+                vTaskDelay(ATH20_DELAY / portTICK_PERIOD_MS);
+            }
+        }
     }
 }
 
@@ -223,20 +240,30 @@ static void taskCheckBMP280(void *pvParameter)
 {
     while (true)
     {
-        float temperature;
-        float pressure;
-        char message[7];
+        if (i2c_semaphore != NULL)
+        {
+            if (xSemaphoreTake(i2c_semaphore, 1000 / portTICK_PERIOD_MS) == pdTRUE)
+            {
+                float temperature;
+                float pressure;
+                char message[7];
 
-        bmp280_read(I2C_PORT_NUM, &temperature, &pressure);
-        ESP_LOGI(TAG, "BMP280 - Temp: %.1f, Press: %.1f", temperature, pressure);
-        bmp280_temp = temperature;
-        bmp280_press = pressure;
+                bmp280_read(I2C_PORT_NUM, &temperature, &pressure);
+                ESP_LOGI(TAG, "BMP280 - Temp: %.1f, Press: %.1f", temperature, pressure);
+                bmp280_temp = temperature;
+                bmp280_press = pressure;
 
-        sprintf(message, "%.1f", temperature);
-        mqttPublish("inside/bmp280/temp", message);
-        sprintf(message, "%.1f", pressure);
-        mqttPublish("inside/bmp280/press", message);
-        vTaskDelay(BMP280_DELAY / portTICK_PERIOD_MS);
+                sprintf(message, "%.1f", temperature);
+                mqttPublish("inside/bmp280/temp", message);
+                sprintf(message, "%.1f", pressure);
+                mqttPublish("inside/bmp280/press", message);
+
+                dispLastRun = 0;
+                xSemaphoreGive(i2c_semaphore);
+
+                vTaskDelay(BMP280_DELAY / portTICK_PERIOD_MS);
+            }
+        }
     }
 }
 
@@ -249,13 +276,12 @@ void taskInitWifi(void *pvParameter)
     ESP_LOGI(TAG, "WIFI INIT OKEY\n\r");
 }
 
-static void taskCheckAIR(void *pvParameter)
+/*static void taskCheckAIR(void *pvParameter)
 {
     while (1)
     {
         vTaskDelay(1000 / portTICK_PERIOD_MS);
-            //uint32_t results[ADC_BUFFER_LEN] = {0};
-            uint64_t result_avg = 0;
+            uint32_t result_avg = 0;
             uint32_t results_count = 0;
             int voltage;
 
@@ -265,21 +291,25 @@ static void taskCheckAIR(void *pvParameter)
             ret = adc_continuous_read(adc_handle, adc_results, ADC_BUFFER_LEN, &results_count, 0);
             if (ret == ESP_OK)
             {
-                for (int i = 0; i < results_count; i++)
+                for (int i = 0; i < results_count; i += SOC_ADC_DIGI_RESULT_BYTES)
                 {
                     adc_digi_output_data_t *p = (adc_digi_output_data_t*)&adc_results[i];
-                    result_avg += ((p)->type1.data);
+                    result_avg = ((p)->type1.data);
                 }
-                result_avg = result_avg / 10;
+                //result_avg = (result_avg / 10);
 
 
                 ///////////////////// TODO: CHECK What method is giving correct results!
-                ESP_ERROR_CHECK(adc_cali_raw_to_voltage(adc_cali_handle, result_avg, &voltage)); 
-                ESP_LOGI(TAG, "ADC Read: %d", voltage);
-                ESP_LOGI(TAG, "ADC Read: %f", (float) result_avg * 3.3 / 4096);
+                //ESP_ERROR_CHECK(adc_cali_raw_to_voltage(adc_cali_handle, result_avg, &voltage));
+                //ESP_LOGI(TAG, "ADC Read: %d", voltage);
+                //ESP_LOGI(TAG, "ADC Read: %f", (float) result_avg * 3.3 / 4095);
                 /////////////////////
 
-                sprintf(message, "%llu", result_avg);
+                //sprintf(message, "%llu", result_avg);
+
+                //voltage = ;
+
+                sprintf(message, "%lu", result_avg);
                 mqttPublish("inside/air/quality", message);
             }
             else
@@ -289,18 +319,50 @@ static void taskCheckAIR(void *pvParameter)
             }
 
     }
-}
+}*/
 
-static void taskDisplay(void *pvParameter) 
+static void taskDisplay(void *pvParameter)
 {
-    static char char_array[(128*64)+1] = {0};
+    static char char_array[(128 * 64) + 1] = {0};
+    char mqtt_status[10] = "N/A";
 
     while (1)
     {
-        sprintf(char_array, "Actual reading\nTemp1: %.1f C\nTemp2: %.1f C\nPress: %.1fhPa\nHum: %.1f %%\nHave a good day!", bmp280_temp, ath20_temp, bmp280_press, ath20_hum);
+        if ((i2c_semaphore != NULL) && (dispLastRun == 0))
+        {
+            if (xSemaphoreTake(i2c_semaphore, 1000 / portTICK_PERIOD_MS) == pdTRUE)
+            {
+                ESP_LOGI(TAG, "DISPLAY UPDATE");
+                dispLastRun = 1;
 
-        xTaskCreatePinnedToCore(&task_ssd1306_display_text, "displayText", 2048, (void *) char_array, tskIDLE_PRIORITY, NULL, APP_CPU_NUM);
+                if (mqtt_ret == ESP_OK)
+                    sprintf(mqtt_status, "Connected");
+                else
+                    sprintf(mqtt_status, "Not Conn");
 
-        vTaskDelay( (1000/DISPLAY_HZ) / portTICK_PERIOD_MS );
+                sprintf(char_array, "MQTT: %s\nActual reading\nTemp1: %.1f C\nTemp2: %.1f C\nPress: %.1fhPa\nHum: %.1f %%\nUP: %llu", mqtt_status, bmp280_temp, ath20_temp, bmp280_press, ath20_hum, uptime);
+
+                xTaskCreatePinnedToCore(&task_ssd1306_display_text, "displayText", 2048, (void *)char_array, tskIDLE_PRIORITY, NULL, APP_CPU_NUM);
+                //task_ssd1306_display_text((void *)char_array);
+
+                while ( ext_i2c_busy == 1 )
+                {
+                    //ESP_LOGI(TAG, "DISPLAY LOCK");
+                    vTaskDelay(1 / portTICK_PERIOD_MS);
+                }
+
+                xSemaphoreGive(i2c_semaphore);
+
+                vTaskDelay((1000 / DISPLAY_HZ) / portTICK_PERIOD_MS);
+            }
+            //else
+            //{
+            //    ESP_LOGI(TAG, "Semaphore pdFALSE");
+            //}
+        }
+        //else
+        //{
+        //    ESP_LOGI(TAG, "Semaphore is NULL");
+        //}
     }
 }

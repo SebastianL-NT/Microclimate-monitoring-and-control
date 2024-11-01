@@ -1,0 +1,114 @@
+[37m[37m[0;32mI (4931) esp_netif_handle[37mr[37ms: sta ip: 192.168.1.6, mask: 2[37m5[37m5.255.255.0, gw: 192.168.1.1[0[37mm[37m
+[0;32mI (4931) CONNECTION: W[37mI[37mFI: Connected 192.168.1.6[0m
+[37m[37m[0;32mI (4931) MAIN: WIFI INIT [37mO[37mKEY
+[0m
+[0;32mI (4941) CON[37mN[37mECTION: Other event id:7[0m
+I[37m [37m(4951) wifi:<ba-add>idx:0 (ifx:[37m0[37m, e4:47:b3:d8:b6:4a), tid:0, ss[37mn[37m:2, winSize:64
+[37m[37m[0;32mI (4971) CONNECTION: MQTT[37m_[37mEVENT_CONNECTED[0m
+[0;32mI ([37m4[37m971) CONNECTION: sent publish s[37mu[37mccessful, msg_id=5913[0m
+[0;[37m3[37m2mI (4971) CONNECTION: sent sub[37ms[37mcribe successful, msg_id=54882[37m[[37m0m
+[0;32mI (4971) CONNECTION:[37m [37msent subscribe successful, msg_[37mi[37md=30505[0m
+[0;32mI (4981) CO[37mN[37mNECTION: sent unsubscribe succe[37ms[37msful, msg_id=37876[0m
+[0;32m[37mI[37m (4991) CONNECTION: MQTT_EVENT_[37mP[37mUBLISHED, msg_id=5913[0m
+[0;[37m3[37m2mI (5001) CONNECTION: MQTT_EVE[37mN[37mT_SUBSCRIBED, msg_id=54882[0m[37m
+[37m[0;32mI (5001) CONNECTION: sen[37mt[37m publish successful, msg_id=0[[37m0[37mm
+[0;32mI (5011) CONNECTION: [37mM[37mQTT_EVENT_SUBSCRIBED, msg_id=30[37m5[37m05[0m
+[0;32mI (5011) CONNECT[37mI[37mON: sent publish successful, ms[37mg[37m_id=0[0m
+[0;32mI (5021) CONN[37mE[37mCTION: MQTT_EVENT_UNSUBSCRIBED,[37m [37mmsg_id=37876[0m
+[0;32mI (503[37m1[37m) CONNECTION: MQTT_EVENT_DATA[[37m0[37mm
+TOPIC=/topic/qos0
+DATA=dat[37ma[37m
+[0;32mI (5031) CONNECTION: [37mM[37mQTT_EVENT_DATA[0m
+TOPIC=/topi[37mc[37m/qos0
+DATA=data
+[37m[37m[0;32mI (5061) SSD1306: OLED co[37mn[37mfigured successfully[0m
+[37m[37m[0;32mI (5161) MAIN: INIT END[[37m0[37mm
+[37m[37m[0;32mI (5401) MAIN: ATH20 - Te[37mm[37mp: 26.2, Hum: 50.0[0m
+[37m[37m[0;32mI (5541) MAIN: BMP280 - T[37me[37mmp: 26.5, Press: 1009.6[0m
+[37m[37m[0;32mI (5571) MAIN: DISPLAY UP[37mD[37mATE[0m
+[37m[37m[0;32mI (6261) MAIN: HEARTHBEAT[37m[37m[0m
+[37m[37m[0;32mI (6531) MAIN: ATH20 - Te[37mm[37mp: 26.2, Hum: 50.0[0m
+[37m[37m[0;32mI (7261) MAIN: HEARTHBEAT[37m[37m[0m
+[37m[37m[0;32mI (7711) MAIN: ATH20 - Te[37mm[37mp: 26.2, Hum: 50.0[0m
+[37m[37m[0;32mI (8261) MAIN: HEARTHBEAT[37m[37m[0m
+[37m[37m[0;32mI (8891) MAIN: ATH20 - Te[37mm[37mp: 26.2, Hum: 50.1[0m
+[37m[37m[0;32mI (9261) MAIN: HEARTHBEAT[37m[37m[0m
+[37m[37m[0;32mI (10071) MAIN: ATH20 - T[37memp: 26.2, Hum: 50.2[0m
+[37m[37m[0;32mI (10261) MAIN: HEARTHBEA[37mT[37m[0m
+[37m[37m[0;32mI (10691) MAIN: BMP280 - [37mT[37memp: 26.5, Press: 1009.7[0m
+[37m[37m[0;32mI (10721) MAIN: DISPLAY U[37mP[37mDATE[0m
+[37m[37m[0;32mI (11211) MAIN: ATH20 - T[37me[37mmp: 26.2, Hum: 50.2[0m
+[37m[37m[0;32mI (11261) MAIN: HEARTHBEA[37mT[37m[0m
+[37m[37m[0;32mI (12261) MAIN: HEARTHBEA[37mT[37m[0m
+[37m[37m[0;32mI (12331) MAIN: ATH20 - T[37me[37mmp: 26.2, Hum: 50.2[0m
+[37m[37m[0;32mI (13261) MAIN: HEARTHBEA[37mT[37m[0m
+[37m[37m[0;32mI (13511) MAIN: ATH20 - T[37me[37mmp: 26.2, Hum: 50.5[0m
+[37m[37m[0;32mI (14261) MAIN: HEARTHBEA[37mT[37m[0m
+[37m[37m[0;32mI (14691) MAIN: ATH20 - T[37me[37mmp: 26.2, Hum: 50.6[0m
+[37m[37m[0;32mI (15261) MAIN: HEARTHBEA[37mT[37m[0m
+[37m[37m[0;32mI (15821) MAIN: BMP280 - [37mT[37memp: 26.5, Press: 1009.5[0m
+[37m[37m[0;32mI (15991) MAIN: ATH20 - T[37me[37mmp: 26.2, Hum: 50.7[0m
+[37m[37m[0;32mI (16021) MAIN: DISPLAY U[37mP[37mDATE[0m
+[37m[37m[0;32mI (16261) MAIN: HEARTHBEA[37mT[37m[0m
+[37m[37m[0;32mI (17121) MAIN: ATH20 - T[37me[37mmp: 26.2, Hum: 50.7[0m
+[37m[37m[0;32mI (17261) MAIN: HEARTHBEA[37mT[37m[0m
+[37m[37m[0;32mI (18261) MAIN: HEARTHBEA[37mT[37m[0m
+[37m[37m[0;32mI (18301) MAIN: ATH20 - T[37me[37mmp: 26.2, Hum: 50.7[0m
+[37m[37m[0;32mI (19261) MAIN: HEARTHBEA[37mT[37m[0m
+[37m[37m[0;32mI (19481) MAIN: ATH20 - T[37me[37mmp: 26.2, Hum: 50.7[0m
+[37m[37m[0;32mI (20261) MAIN: HEARTHBEA[37mT[37m[0m
+[37m[37m[0;32mI (20661) MAIN: ATH20 - T[37me[37mmp: 26.1, Hum: 50.7[0m
+[37m[37m[0;32mI (20961) MAIN: BMP280 - [37mT[37memp: 26.5, Press: 1009.6[0m
+[37m[37m[0;32mI (21041) MAIN: DISPLAY U[37mP[37mDATE[0m
+[37m[37m[0;32mI (21261) MAIN: HEARTHBEA[37mT[37m[0m
+[37m[37m[0;32mI (21791) MAIN: ATH20 - T[37me[37mmp: 26.1, Hum: 50.7[0m
+[37m[37m[0;32mI (22261) MAIN: HEARTHBEA[37mT[37m[0m
+[37m[37m[0;32mI (23021) MAIN: ATH20 - T[37me[37mmp: 26.2, Hum: 50.9[0m
+[37m[37m[0;32mI (23261) MAIN: HEARTHBEA[37mT[37m[0m
+[37m[37m[0;32mI (24211) MAIN: ATH20 - T[37me[37mmp: 26.2, Hum: 50.9[0m
+[37m[37m[0;32mI (24261) MAIN: HEARTHBEA[37mT[37m[0m
+[37m[37m[0;32mI (25261) MAIN: HEARTHBEA[37mT[37m[0m
+[37m[37m[0;32mI (25391) MAIN: ATH20 - T[37me[37mmp: 26.2, Hum: 50.8[0m
+[37m[37m[0;32mI (26091) MAIN: BMP280 - [37mT[37memp: 26.5, Press: 1009.6[0m
+[37m[37m[0;32mI (26121) MAIN: DISPLAY U[37mP[37mDATE[0m
+[37m[37m[0;32mI (26261) MAIN: HEARTHBEA[37mT[37m[0m
+[37m[37m[0;32mI (26521) MAIN: ATH20 - T[37me[37mmp: 26.2, Hum: 50.8[0m
+[37m[37m[0;32mI (27261) MAIN: HEARTHBEA[37mT[37m[0m
+[37m[37m[0;32mI (27651) MAIN: ATH20 - T[37me[37mmp: 26.2, Hum: 50.8[0m
+[37m[37m[0;32mI (28261) MAIN: HEARTHBEA[37mT[37m[0m
+[37m[37m[0;32mI (28821) MAIN: ATH20 - T[37me[37mmp: 26.2, Hum: 50.8[0m
+[37m[37m[0;32mI (29261) MAIN: HEARTHBEA[37mT[37m[0m
+[37m[37m[0;32mI (30001) MAIN: ATH20 - T[37me[37mmp: 26.2, Hum: 50.8[0m
+[37m[37m[0;32mI (30261) MAIN: HEARTHBEA[37mT[37m[0m
+[37m[37m[0;32mI (31171) MAIN: ATH20 - T[37me[37mmp: 26.2, Hum: 50.8[0m
+[37m[37m[0;32mI (31261) MAIN: HEARTHBEA[37mT[37m[0m
+[37m[37m[0;32mI (31311) MAIN: BMP280 - [37mT[37memp: 26.5, Press: 1009.6[0m
+[37m[37m[0;32mI (31341) MAIN: DISPLAY U[37mP[37mDATE[0m
+[37m[37m[0;32mI (32261) MAIN: HEARTHBEA[37mT[37m[0m
+[37m[37m[0;32mI (32301) MAIN: ATH20 - T[37me[37mmp: 26.2, Hum: 50.8[0m
+[37m[37m[0;32mI (33261) MAIN: HEARTHBEA[37mT[37m[0m
+[37m[37m[0;32mI (33491) MAIN: ATH20 - T[37me[37mmp: 26.2, Hum: 51.3[0m
+[37m[37m[0;32mI (34261) MAIN: HEARTHBEA[37mT[37m[0m
+[37m[37m[0;32mI (34671) MAIN: ATH20 - T[37me[37mmp: 26.2, Hum: 51.4[0m
+[37m[37m[0;32mI (35261) MAIN: HEARTHBEA[37mT[37m[0m
+[37m[37m[0;32mI (35851) MAIN: ATH20 - T[37me[37mmp: 26.2, Hum: 51.4[0m
+[37m[37m[0;32mI (36261) MAIN: HEARTHBEA[37mT[37m[0m
+[37m[37m[0;32mI (36441) MAIN: BMP280 - [37mT[37memp: 26.5, Press: 1009.6[0m
+[37m[37m[0;32mI (36471) MAIN: DISPLAY U[37mP[37mDATE[0m
+[37m[37m[0;32mI (36971) MAIN: ATH20 - T[37me[37mmp: 26.2, Hum: 51.4[0m
+[37m[37m[0;32mI (37261) MAIN: HEARTHBEA[37mT[37m[0m
+[37m[37m[0;32mI (38101) MAIN: ATH20 - T[37me[37mmp: 26.2, Hum: 51.4[0m
+[37m[37m[0;32mI (38261) MAIN: HEARTHBEA[37mT[37m[0m
+[37m[37m[0;32mI (39261) MAIN: HEARTHBEA[37mT[37m[0m
+[37m[37m[0;32mI (39281) MAIN: ATH20 - T[37me[37mmp: 26.2, Hum: 51.5[0m
+[37m[37m[0;32mI (40261) MAIN: HEARTHBEA[37mT[37m[0m
+[37m[37m[0;32mI (40461) MAIN: ATH20 - T[37me[37mmp: 26.2, Hum: 51.5[0m
+[37m[37m[0;32mI (41261) MAIN: HEARTHBEA[37mT[37m[0m
+[37m[37m[0;32mI (41581) MAIN: BMP280 - [37mT[37memp: 26.5, Press: 1009.6[0m
+[37m[37m[0;32mI (41601) MAIN: DISPLAY U[37mP[37mDATE[0m
+[37m[37m[0;32mI (41721) MAIN: ATH20 - T[37me[37mmp: 26.2, Hum: 51.5[0m
+[37m[37m[0;32mI (42261) MAIN: HEARTHBEA[37mT[37m[0m
+[37m[37m[0;32mI (42851) MAIN: ATH20 - T[37me[37mmp: 26.2, Hum: 51.5[0m
+[37m[37m[0;32mI (43261) MAIN: HEARTHBEA[37mT[37m[0m
+[37m[37m[0;32mI (44031) MAIN: ATH20 - T[37me[37mmp: 26.2, Hum: 51.9[0m
+[37m[37m[0;32mI (44261) MAIN: HEARTHBEA[37mT[37m[0m

@@ -1,0 +1,566 @@
+[0;32mI (46261) MAIN: HEARTHBEAT[0m
+[0;32mI (46391) MAIN: ATH20 - Temp: 26.2, Hum: 51.7[0m
+[0;32mI (46711) MAIN: BMP280 - Temp: 26.5, Press: 1009.6[0m
+[0;32mI (46731) MAIN: DISPLAY UPDATE[0m
+[0;32mI (47261) MAIN: HEARTHBEAT[0m
+[0;32mI (47521) MAIN: ATH20 - Temp: 26.2, Hum: 51.7[0m
+[0;32mI (48261) MAIN: HEARTHBEAT[0m
+[0;32mI (48761) MAIN: ATH20 - Temp: 26.2, Hum: 51.7[0m
+[0;32mI (49261) MAIN: HEARTHBEAT[0m
+[0;32mI (49941) MAIN: ATH20 - Temp: 26.2, Hum: 51.6[0m
+[0;32mI (50261) MAIN: HEARTHBEAT[0m
+[0;32mI (51121) MAIN: ATH20 - Temp: 26.2, Hum: 51.4[0m
+[0;32mI (51261) MAIN: HEARTHBEAT[0m
+[0;32mI (51841) MAIN: BMP280 - Temp: 26.5, Press: 1009.6[0m
+[0;32mI (51871) MAIN: DISPLAY UPDATE[0m
+[0;32mI (52261) MAIN: HEARTHBEAT[0m
+[0;32mI (52261) MAIN: ATH20 - Temp: 26.2, Hum: 51.4[0m
+[0;32mI (53261) MAIN: HEARTHBEAT[0m
+[0;32mI (53391) MAIN: ATH20 - Temp: 26.2, Hum: 51.4[0m
+[0;32mI (54261) MAIN: HEARTHBEAT[0m
+[0;32mI (54571) MAIN: ATH20 - Temp: 26.2, Hum: 51.2[0m
+ets Jul 29 2019 12:21:46
+
+rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:2
+load:0x3fff0030,len:7172
+load:0x40078000,len:15540
+load:0x40080400,len:4
+ho 8 tail 4 room 4
+load:0x40080404,len:3904
+entry 0x40080638
+[0;32mI (31) boot: ESP-IDF 5.2.1 2nd stage bootloader[0m
+[0;32mI (31) boot: compile time Nov  1 2024 07:56:59[0m
+[0;32mI (31) boot: Multicore bootloader[0m
+[0;32mI (35) boot: chip revision: v3.1[0m
+[0;32mI (39) boot.esp32: SPI Speed      : 40MHz[0m
+[0;32mI (44) boot.esp32: SPI Mode       : DIO[0m
+[0;32mI (48) boot.esp32: SPI Flash Size : 4MB[0m
+[0;32mI (53) boot: Enabling RNG early entropy source...[0m
+[0;32mI (58) boot: Partition Table:[0m
+[0;32mI (62) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (69) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (76) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (84) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (91) boot: End of partition table[0m
+[0;32mI (96) esp_image: segment 0: paddr=00010020 vaddr=3f400020 size=295f4h (169460) map[0m
+[0;32mI (162) esp_image: segment 1: paddr=0003961c vaddr=3ffb0000 size=04130h ( 16688) load[0m
+[0;32mI (169) esp_image: segment 2: paddr=0003d754 vaddr=40080000 size=028c4h ( 10436) load[0m
+[0;32mI (173) esp_image: segment 3: paddr=00040020 vaddr=400d0020 size=9f70ch (653068) map[0m
+[0;32mI (400) esp_image: segment 4: paddr=000df734 vaddr=400828c4 size=153d8h ( 87000) load[0m
+[0;32mI (446) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (447) boot: Disabling RNG early entropy source...[0m
+[0;32mI (458) cpu_start: Multicore app[0m
+[0;32mI (468) cpu_start: Pro cpu start user code[0m
+[0;32mI (468) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (468) cpu_start: Application information:[0m
+[0;32mI (471) cpu_start: Project name:     Device1_InsideSensors[0m
+[0;32mI (477) cpu_start: App version:      c581ea2-dirty[0m
+[0;32mI (482) cpu_start: Compile time:     Nov  1 2024 07:56:49[0m
+[0;32mI (489) cpu_start: ELF file SHA256:  2500543a2...[0m
+[0;32mI (494) cpu_start: ESP-IDF:          5.2.1[0m
+[0;32mI (499) cpu_start: Min chip rev:     v0.0[0m
+[0;32mI (503) cpu_start: Max chip rev:     v3.99 [0m
+[0;32mI (508) cpu_start: Chip rev:         v3.1[0m
+[0;32mI (513) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (520) heap_init: At 3FFAE6E0 len 00001920 (6 KiB): DRAM[0m
+[0;32mI (526) heap_init: At 3FFBA8C8 len 00025738 (149 KiB): DRAM[0m
+[0;32mI (532) heap_init: At 3FFE0440 len 00003AE0 (14 KiB): D/IRAM[0m
+[0;32mI (539) heap_init: At 3FFE4350 len 0001BCB0 (111 KiB): D/IRAM[0m
+[0;32mI (545) heap_init: At 40097C9C len 00008364 (32 KiB): IRAM[0m
+[0;32mI (553) spi_flash: detected chip: generic[0m
+[0;32mI (556) spi_flash: flash io: dio[0m
+[0;33mW (560) i2c: This driver is an old driver, please migrate your application code to adapt `driver/i2c_master.h`[0m
+[0;32mI (572) main_task: Started on CPU0[0m
+[0;32mI (582) main_task: Calling app_main()[0m
+[0;32m[0;32mI (1582) uart: queue free spaces: 10[0m
+[0;32mI (1582) MAIN: INIT START[0m
+I (1632) wifi:wifi driver task: 3ffc3f38, prio:23, stack:6656, core=0
+I (1652) wifi:wifi firmware version: a9f5b59
+I (1652) wifi:wifi certification version: v7.0
+I (1652) wifi:config NVS flash: enabled
+I (1652) wifi:config nano formating: disabled
+I (1662) wifi:Init data frame dynamic rx buffer num: 32
+I (1662) wifi:Init static rx mgmt buffer num: 5
+I (1672) wifi:Init management short buffer num: 32
+I (1672) wifi:Init dynamic tx buffer num: 32
+I (1672) wifi:Init static rx buffer size: 1600
+I (1682) wifi:Init static rx buffer num: 10
+I (1682) wifi:Init dynamic rx buffer num: 32
+[0;32mI (1692) wifi_init: rx ba win: 6[0m
+[0;32mI (1692) wifi_init: tcpip mbox: 32[0m
+[0;32mI (1692) wifi_init: udp mbox: 6[0m
+[0;32mI (1702) wifi_init: tcp mbox: 6[0m
+[0;32mI (1702) wifi_init: tcp tx win: 5760[0m
+[0;32mI (1712) wifi_init: tcp rx win: 5760[0m
+[0;32mI (1712) wifi_init: tcp mss: 1440[0m
+[0;32mI (1712) wifi_init: WiFi IRAM OP enabled[0m
+[0;32mI (1722) wifi_init: WiFi RX IRAM OP enabled[0m
+[0;32mI (1732) phy_init: phy_version 4791,2c4672b,Dec 20 2023,16:06:06[0m
+I (1822) wifi:mode : sta (08:f9:e0:d3:b2:34)
+I (1822) wifi:enable tsf
+I (1832) wifi:new:<4,0>, old:<1,0>, ap:<255,255>, sta:<4,0>, prof:1
+I (1832) wifi:state: init -> auth (b0)
+I (1842) wifi:state: auth -> assoc (0)
+I (1852) wifi:state: assoc -> run (10)
+I (1902) wifi:connected with INEA-33EE_2.4G, aid = 3, channel 4, BW20, bssid = e4:47:b3:d8:b6:4a
+I (1902) wifi:security: WPA2-PSK, phy: bgn, rssi: -56
+I (1912) wifi:pm start, type: 1
+
+I (1912) wifi:dp: 1, bi: 102400, li: 3, scale listen interval from 307200 us to 307200 us
+I (1982) wifi:AP's beacon interval = 102400 us, DTIM period = 1
+I (4072) wifi:<ba-add>idx:0 (ifx:0, e4:47:b3:d8:b6:4a), tid:0, ssn:1, winSize:64
+[0;32mI (4922) esp_netif_handlers: sta ip: 192.168.1.6, mask: 255.255.255.0, gw: 192.168.1.1[0m
+[0;32mI (4922) CONNECTION: WIFI: Connected 192.168.1.6[0m
+[0;32mI (4922) MAIN: WIFI INIT OKEY
+[0m
+[0;32mI (4932) CONNECTION: Other event id:7[0m
+[0;32mI (5012) SSD1306: OLED configured successfully[0m
+[0;32mI (5112) MAIN: INIT END[0m
+[0;32mI (5352) MAIN: ATH20 - Temp: 26.2, Hum: 50.8[0m
+[0;32mI (6212) MAIN: HEARTHBEAT[0m
+[0;32mI (7212) MAIN: HEARTHBEAT[0m
+[0;32mI (8212) MAIN: HEARTHBEAT[0m
+[0;32mI (9212) MAIN: HEARTHBEAT[0m
+[0;32mI (10212) MAIN: HEARTHBEAT[0m
+[0;32mI (10632) CONNECTION: MQTT_EVENT_CONNECTED[0m
+[0;32mI (10632) CONNECTION: sent publish successful, msg_id=28909[0m
+[0;32mI (10642) CONNECTION: sent subscribe successful, msg_id=11275[0m
+[0;32mI (10642) CONNECTION: sent subscribe successful, msg_id=58135[0m
+[0;32mI (10652) CONNECTION: sent unsubscribe successful, msg_id=35059[0m
+[0;32mI (10652) CONNECTION: MQTT_EVENT_PUBLISHED, msg_id=28909[0m
+[0;32mI (10662) CONNECTION: MQTT_EVENT_SUBSCRIBED, msg_id=11275[0m
+[0;32mI (10672) CONNECTION: sent publish successful, msg_id=0[0m
+[0;32mI (10672) CONNECTION: MQTT_EVENT_SUBSCRIBED, msg_id=58135[0m
+[0;32mI (10682) CONNECTION: sent publish successful, msg_id=0[0m
+[0;32mI (10682) CONNECTION: MQTT_EVENT_UNSUBSCRIBED, msg_id=35059[0m
+[0;32mI (10692) CONNECTION: MQTT_EVENT_DATA[0m
+TOPIC=/topic/qos0
+DATA=data
+[0;32mI (10702) CONNECTION: MQTT_EVENT_DATA[0m
+TOPIC=/topic/qos0
+DATA=data
+[0;32mI (10852) MAIN: BMP280 - Temp: 26.5, Press: 1009.6[0m
+[0;32mI (10882) MAIN: DISPLAY UPDATE[0m
+[0;32mI (11212) MAIN: HEARTHBEAT[0m
+[0;32mI (11852) MAIN: ATH20 - Temp: 26.2, Hum: 50.8[0m
+[0;32mI (12212) MAIN: HEARTHBEAT[0m
+[0;32mI (13022) MAIN: ATH20 - Temp: 26.2, Hum: 50.5[0m
+[0;32mI (13212) MAIN: HEARTHBEAT[0m
+[0;32mI (14202) MAIN: ATH20 - Temp: 26.2, Hum: 50.5[0m
+[0;32mI (14212) MAIN: HEARTHBEAT[0m
+[0;32mI (15212) MAIN: HEARTHBEAT[0m
+[0;32mI (15382) MAIN: ATH20 - Temp: 26.2, Hum: 50.5[0m
+[0;32mI (15992) MAIN: BMP280 - Temp: 26.5, Press: 1009.6[0m
+[0;32mI (16022) MAIN: DISPLAY UPDATE[0m
+[0;32mI (16212) MAIN: HEARTHBEAT[0m
+[0;32mI (16512) MAIN: ATH20 - Temp: 26.2, Hum: 50.5[0m
+[0;32mI (17212) MAIN: HEARTHBEAT[0m
+[0;32mI (17642) MAIN: ATH20 - Temp: 26.2, Hum: 50.5[0m
+[0;32mI (18212) MAIN: HEARTHBEAT[0m
+[0;32mI (18822) MAIN: ATH20 - Temp: 26.2, Hum: 50.4[0m
+[0;32mI (19212) MAIN: HEARTHBEAT[0m
+[0;32mI (20002) MAIN: ATH20 - Temp: 26.2, Hum: 50.4[0m
+[0;32mI (20212) MAIN: HEARTHBEAT[0m
+[0;32mI (21132) MAIN: BMP280 - Temp: 26.5, Press: 1009.7[0m
+[0;32mI (21212) MAIN: HEARTHBEAT[0m
+[0;32mI (21292) MAIN: ATH20 - Temp: 26.2, Hum: 50.4[0m
+[0;32mI (21322) MAIN: DISPLAY UPDATE[0m
+[0;32mI (22212) MAIN: HEARTHBEAT[0m
+[0;32mI (22422) MAIN: ATH20 - Temp: 26.2, Hum: 50.4[0m
+[0;32mI (23212) MAIN: HEARTHBEAT[0m
+[0;32mI (23602) MAIN: ATH20 - Temp: 26.2, Hum: 50.3[0m
+[0;32mI (24212) MAIN: HEARTHBEAT[0m
+[0;32mI (24782) MAIN: ATH20 - Temp: 26.2, Hum: 50.2[0m
+[0;32mI (25212) MAIN: HEARTHBEAT[0m
+[0;32mI (25962) MAIN: ATH20 - Temp: 26.2, Hum: 50.2[0m
+[0;32mI (26212) MAIN: HEARTHBEAT[0m
+[0;32mI (26252) MAIN: BMP280 - Temp: 26.5, Press: 1009.6[0m
+[0;32mI (26342) MAIN: DISPLAY UPDATE[0m
+[0;32mI (27092) MAIN: ATH20 - Temp: 26.2, Hum: 50.2[0m
+[0;32mI (27212) MAIN: HEARTHBEAT[0m
+[0;32mI (28212) MAIN: HEARTHBEAT[0m
+[0;32mI (28352) MAIN: ATH20 - Temp: 26.2, Hum: 50.2[0m
+[0;32mI (29212) MAIN: HEARTHBEAT[0m
+[0;32mI (29522) MAIN: ATH20 - Temp: 26.2, Hum: 50.2[0m
+[0;32mI (30212) MAIN: HEARTHBEAT[0m
+[0;32mI (30702) MAIN: ATH20 - Temp: 26.3, Hum: 50.3[0m
+[0;32mI (31212) MAIN: HEARTHBEAT[0m
+[0;32mI (31392) MAIN: BMP280 - Temp: 26.6, Press: 1009.7[0m
+[0;32mI (31422) MAIN: DISPLAY UPDATE[0m
+[0;32mI (31842) MAIN: ATH20 - Temp: 26.3, Hum: 50.3[0m
+[0;32mI (32212) MAIN: HEARTHBEAT[0m
+[0;32mI (32972) MAIN: ATH20 - Temp: 26.3, Hum: 50.3[0m
+[0;32mI (33212) MAIN: HEARTHBEAT[0m
+[0;32mI (34152) MAIN: ATH20 - Temp: 26.3, Hum: 50.7[0m
+[0;32mI (34212) MAIN: HEARTHBEAT[0m
+[0;32mI (35212) MAIN: HEARTHBEAT[0m
+[0;32mI (35332) MAIN: ATH20 - Temp: 26.3, Hum: 50.8[0m
+[0;32mI (36212) MAIN: HEARTHBEAT[0m
+[0;32mI (36502) MAIN: ATH20 - Temp: 26.3, Hum: 50.9[0m
+[0;32mI (36622) MAIN: BMP280 - Temp: 26.6, Press: 1009.6[0m
+[0;32mI (36652) MAIN: DISPLAY UPDATE[0m
+[0;32mI (37212) MAIN: HEARTHBEAT[0m
+[0;32mI (37622) MAIN: ATH20 - Temp: 26.3, Hum: 50.9[0m
+[0;32mI (38212) MAIN: HEARTHBEAT[0m
+[0;32mI (38802) MAIN: ATH20 - Temp: 26.3, Hum: 51.0[0m
+[0;32mI (39212) MAIN: HEARTHBEAT[0m
+[0;32mI (39982) MAIN: ATH20 - Temp: 26.3, Hum: 50.9[0m
+[0;32mI (40212) MAIN: HEARTHBEAT[0m
+[0;32mI (41162) MAIN: ATH20 - Temp: 26.3, Hum: 50.8[0m
+[0;32mI (41212) MAIN: HEARTHBEAT[0m
+[0;32mI (41762) MAIN: BMP280 - Temp: 26.6, Press: 1009.6[0m
+[0;32mI (41792) MAIN: DISPLAY UPDATE[0m
+[0;32mI (42212) MAIN: HEARTHBEAT[0m
+[0;32mI (42292) MAIN: ATH20 - Temp: 26.3, Hum: 50.8[0m
+[0;32mI (43212) MAIN: HEARTHBEAT[0m
+[0;32mI (43422) MAIN: ATH20 - Temp: 26.3, Hum: 50.8[0m
+[0;32mI (44212) MAIN: HEARTHBEAT[0m
+[0;32mI (44602) MAIN: ATH20 - Temp: 26.3, Hum: 50.5[0m
+[0;32mI (45212) MAIN: HEARTHBEAT[0m
+[0;32mI (45782) MAIN: ATH20 - Temp: 26.3, Hum: 50.4[0m
+[0;32mI (46212) MAIN: HEARTHBEAT[0m
+[0;32mI (46902) MAIN: BMP280 - Temp: 26.6, Press: 1009.7[0m
+[0;32mI (46932) MAIN: DISPLAY UPDATE[0m
+[0;32mI (47052) MAIN: ATH20 - Temp: 26.3, Hum: 50.4[0m
+[0;32mI (47212) MAIN: HEARTHBEAT[0m
+[0;32mI (48172) MAIN: ATH20 - Temp: 26.3, Hum: 50.4[0m
+[0;32mI (48212) MAIN: HEARTHBEAT[0m
+[0;32mI (49212) MAIN: HEARTHBEAT[0m
+[0;32mI (49352) MAIN: ATH20 - Temp: 26.2, Hum: 50.2[0m
+[0;32mI (50212) MAIN: HEARTHBEAT[0m
+[0;32mI (50532) MAIN: ATH20 - Temp: 26.3, Hum: 50.1[0m
+[0;32mI (51212) MAIN: HEARTHBEAT[0m
+[0;32mI (51712) MAIN: ATH20 - Temp: 26.3, Hum: 50.1[0m
+[0;32mI (52042) MAIN: BMP280 - Temp: 26.6, Press: 1009.7[0m
+[0;32mI (52072) MAIN: DISPLAY UPDATE[0m
+[0;32mI (52212) MAIN: HEARTHBEAT[0m
+[0;32mI (52842) MAIN: ATH20 - Temp: 26.3, Hum: 50.1[0m
+[0;32mI (53212) MAIN: HEARTHBEAT[0m
+[0;32mI (54042) MAIN: ATH20 - Temp: 26.3, Hum: 50.0[0m
+[0;32mI (54212) MAIN: HEARTHBEAT[0m
+[0;32mI (55212) MAIN: HEARTHBEAT[0m
+[0;32mI (55222) MAIN: ATH20 - Temp: 26.3, Hum: 50.0[0m
+[0;32mI (56212) MAIN: HEARTHBEAT[0m
+[0;32mI (56402) MAIN: ATH20 - Temp: 26.3, Hum: 49.9[0m
+[0;32mI (57182) MAIN: BMP280 - Temp: 26.6, Press: 1009.6[0m
+[0;32mI (57202) MAIN: DISPLAY UPDATE[0m
+[0;32mI (57212) MAIN: HEARTHBEAT[0m
+[0;32mI (57532) MAIN: ATH20 - Temp: 26.3, Hum: 49.9[0m
+[0;32mI (58212) MAIN: HEARTHBEAT[0m
+[0;32mI (58662) MAIN: ATH20 - Temp: 26.3, Hum: 49.9[0m
+[0;32mI (59212) MAIN: HEARTHBEAT[0m
+[0;32mI (59842) MAIN: ATH20 - Temp: 26.3, Hum: 49.8[0m
+[0;32mI (60212) MAIN: HEARTHBEAT[0m
+[0;32mI (61022) MAIN: ATH20 - Temp: 26.3, Hum: 49.7[0m
+[0;32mI (61212) MAIN: HEARTHBEAT[0m
+[0;32mI (62192) MAIN: ATH20 - Temp: 26.3, Hum: 49.7[0m
+[0;32mI (62212) MAIN: HEARTHBEAT[0m
+[0;32mI (62322) MAIN: BMP280 - Temp: 26.6, Press: 1009.6[0m
+[0;32mI (62352) MAIN: DISPLAY UPDATE[0m
+[0;32mI (63212) MAIN: HEARTHBEAT[0m
+[0;32mI (63322) MAIN: ATH20 - Temp: 26.3, Hum: 49.7[0m
+[0;32mI (64212) MAIN: HEARTHBEAT[0m
+[0;32mI (64502) MAIN: ATH20 - Temp: 26.3, Hum: 49.7[0m
+[0;32mI (65212) MAIN: HEARTHBEAT[0m
+[0;32mI (65682) MAIN: ATH20 - Temp: 26.3, Hum: 49.6[0m
+[0;32mI (66212) MAIN: HEARTHBEAT[0m
+[0;32mI (66862) MAIN: ATH20 - Temp: 26.3, Hum: 49.6[0m
+[0;32mI (67212) MAIN: HEARTHBEAT[0m
+[0;32mI (67462) MAIN: BMP280 - Temp: 26.6, Press: 1009.6[0m
+[0;32mI (67492) MAIN: DISPLAY UPDATE[0m
+[0;32mI (68002) MAIN: ATH20 - Temp: 26.3, Hum: 49.6[0m
+[0;32mI (68212) MAIN: HEARTHBEAT[0m
+[0;32mI (69132) MAIN: ATH20 - Temp: 26.3, Hum: 49.6[0m
+[0;32mI (69212) MAIN: HEARTHBEAT[0m
+[0;32mI (70212) MAIN: HEARTHBEAT[0m
+[0;32mI (70312) MAIN: ATH20 - Temp: 26.3, Hum: 49.6[0m
+[0;32mI (71212) MAIN: HEARTHBEAT[0m
+[0;32mI (71482) MAIN: ATH20 - Temp: 26.3, Hum: 49.5[0m
+[0;32mI (72212) MAIN: HEARTHBEAT[0m
+[0;32mI (72602) MAIN: BMP280 - Temp: 26.6, Press: 1009.6[0m
+[0;32mI (72632) MAIN: DISPLAY UPDATE[0m
+[0;32mI (72752) MAIN: ATH20 - Temp: 26.3, Hum: 49.5[0m
+[0;32mI (73212) MAIN: HEARTHBEAT[0m
+[0;32mI (73882) MAIN: ATH20 - Temp: 26.3, Hum: 49.5[0m
+[0;32mI (74212) MAIN: HEARTHBEAT[0m
+[0;32mI (75062) MAIN: ATH20 - Temp: 26.3, Hum: 49.4[0m
+[0;32mI (75212) MAIN: HEARTHBEAT[0m
+[0;32mI (76212) MAIN: HEARTHBEAT[0m
+[0;32mI (76242) MAIN: ATH20 - Temp: 26.3, Hum: 49.4[0m
+[0;32mI (77212) MAIN: HEARTHBEAT[0m
+[0;32mI (77422) MAIN: ATH20 - Temp: 26.3, Hum: 49.4[0m
+[0;32mI (77742) MAIN: BMP280 - Temp: 26.6, Press: 1009.7[0m
+[0;32mI (77772) MAIN: DISPLAY UPDATE[0m
+[0;32mI (78212) MAIN: HEARTHBEAT[0m
+[0;32mI (78552) MAIN: ATH20 - Temp: 26.3, Hum: 49.4[0m
+[0;32mI (79212) MAIN: HEARTHBEAT[0m
+[0;32mI (79752) MAIN: ATH20 - Temp: 26.3, Hum: 49.6[0m
+[0;32mI (80212) MAIN: HEARTHBEAT[0m
+[0;32mI (80932) MAIN: ATH20 - Temp: 26.3, Hum: 49.7[0m
+[0;32mI (81212) MAIN: HEARTHBEAT[0m
+[0;32mI (82112) MAIN: ATH20 - Temp: 26.3, Hum: 49.9[0m
+[0;32mI (82212) MAIN: HEARTHBEAT[0m
+[0;32mI (82882) MAIN: BMP280 - Temp: 26.6, Press: 1009.6[0m
+[0;32mI (82902) MAIN: DISPLAY UPDATE[0m
+[0;32mI (83212) MAIN: HEARTHBEAT[0m
+[0;32mI (83252) MAIN: ATH20 - Temp: 26.3, Hum: 49.9[0m
+[0;32mI (84212) MAIN: HEARTHBEAT[0m
+[0;32mI (84382) MAIN: ATH20 - Temp: 26.3, Hum: 49.9[0m
+[0;32mI (85212) MAIN: HEARTHBEAT[0m
+[0;32mI (85562) MAIN: ATH20 - Temp: 26.3, Hum: 50.1[0m
+[0;32mI (86212) MAIN: HEARTHBEAT[0m
+[0;32mI (86742) MAIN: ATH20 - Temp: 26.3, Hum: 51.0[0m
+[0;32mI (87212) MAIN: HEARTHBEAT[0m
+[0;32mI (87922) MAIN: ATH20 - Temp: 26.3, Hum: 51.5[0m
+[0;32mI (88052) MAIN: BMP280 - Temp: 26.6, Press: 1009.6[0m
+[0;32mI (88082) MAIN: DISPLAY UPDATE[0m
+[0;32mI (88212) MAIN: HEARTHBEAT[0m
+[0;32mI (89052) MAIN: ATH20 - Temp: 26.3, Hum: 51.5[0m
+[0;32mI (89212) MAIN: HEARTHBEAT[0m
+[0;32mI (90212) MAIN: HEARTHBEAT[0m
+[0;32mI (90232) MAIN: ATH20 - Temp: 26.3, Hum: 52.0[0m
+[0;32mI (91212) MAIN: HEARTHBEAT[0m
+[0;32mI (91412) MAIN: ATH20 - Temp: 26.2, Hum: 51.9[0m
+[0;32mI (92212) MAIN: HEARTHBEAT[0m
+[0;32mI (92592) MAIN: ATH20 - Temp: 26.2, Hum: 52.0[0m
+[0;32mI (93192) MAIN: BMP280 - Temp: 26.6, Press: 1009.6[0m
+[0;32mI (93212) MAIN: HEARTHBEAT[0m
+[0;32mI (93222) MAIN: DISPLAY UPDATE[0m
+[0;32mI (93722) MAIN: ATH20 - Temp: 26.2, Hum: 52.0[0m
+[0;32mI (94212) MAIN: HEARTHBEAT[0m
+[0;32mI (94852) MAIN: ATH20 - Temp: 26.2, Hum: 52.0[0m
+[0;32mI (95212) MAIN: HEARTHBEAT[0m
+[0;32mI (96032) MAIN: ATH20 - Temp: 26.3, Hum: 52.4[0m
+[0;32mI (96212) MAIN: HEARTHBEAT[0m
+[0;32mI (97212) MAIN: HEARTHBEAT[0m
+[0;32mI (97212) MAIN: ATH20 - Temp: 26.3, Hum: 52.3[0m
+[0;32mI (98212) MAIN: HEARTHBEAT[0m
+[0;32mI (98332) MAIN: BMP280 - Temp: 26.6, Press: 1009.6[0m
+[0;32mI (98362) MAIN: DISPLAY UPDATE[0m
+[0;32mI (98482) MAIN: ATH20 - Temp: 26.3, Hum: 52.3[0m
+[0;32mI (99212) MAIN: HEARTHBEAT[0m
+[0;32mI (99612) MAIN: ATH20 - Temp: 26.3, Hum: 52.3[0m
+[0;32mI (100212) MAIN: HEARTHBEAT[0m
+[0;32mI (100792) MAIN: ATH20 - Temp: 26.2, Hum: 52.1[0m
+[0;32mI (101212) MAIN: HEARTHBEAT[0m
+[0;32mI (101972) MAIN: ATH20 - Temp: 26.2, Hum: 52.2[0m
+[0;32mI (102212) MAIN: HEARTHBEAT[0m
+[0;32mI (103152) MAIN: ATH20 - Temp: 26.2, Hum: 52.0[0m
+[0;32mI (103212) MAIN: HEARTHBEAT[0m
+[0;32mI (103472) MAIN: BMP280 - Temp: 26.6, Press: 1009.5[0m
+[0;32mI (103482) MAIN: DISPLAY UPDATE[0m
+[0;32mI (104212) MAIN: HEARTHBEAT[0m
+[0;32mI (104282) MAIN: ATH20 - Temp: 26.2, Hum: 52.0[0m
+[0;32mI (105212) MAIN: HEARTHBEAT[0m
+[0;32mI (105502) MAIN: ATH20 - Temp: 26.2, Hum: 51.8[0m
+[0;32mI (106212) MAIN: HEARTHBEAT[0m
+[0;32mI (106682) MAIN: ATH20 - Temp: 26.2, Hum: 51.7[0m
+[0;32mI (107212) MAIN: HEARTHBEAT[0m
+[0;32mI (107862) MAIN: ATH20 - Temp: 26.2, Hum: 51.6[0m
+[0;32mI (108212) MAIN: HEARTHBEAT[0m
+[0;32mI (108602) MAIN: BMP280 - Temp: 26.6, Press: 1009.6[0m
+[0;32mI (108632) MAIN: DISPLAY UPDATE[0m
+[0;32mI (108992) MAIN: ATH20 - Temp: 26.2, Hum: 51.6[0m
+[0;32mI (109212) MAIN: HEARTHBEAT[0m
+[0;32mI (110122) MAIN: ATH20 - Temp: 26.2, Hum: 51.6[0m
+[0;32mI (110212) MAIN: HEARTHBEAT[0m
+[0;32mI (111212) MAIN: HEARTHBEAT[0m
+[0;32mI (111302) MAIN: ATH20 - Temp: 26.2, Hum: 51.8[0m
+[0;32mI (112212) MAIN: HEARTHBEAT[0m
+[0;32mI (112482) MAIN: ATH20 - Temp: 26.3, Hum: 51.9[0m
+[0;32mI (113212) MAIN: HEARTHBEAT[0m
+[0;32mI (113662) MAIN: ATH20 - Temp: 26.3, Hum: 51.9[0m
+[0;32mI (113802) MAIN: BMP280 - Temp: 26.6, Press: 1009.6[0m
+[0;32mI (113812) MAIN: DISPLAY UPDATE[0m
+[0;32mI (114212) MAIN: HEARTHBEAT[0m
+[0;32mI (114792) MAIN: ATH20 - Temp: 26.3, Hum: 51.9[0m
+[0;32mI (115212) MAIN: HEARTHBEAT[0m
+[0;32mI (115962) MAIN: ATH20 - Temp: 26.2, Hum: 52.0[0m
+[0;32mI (116212) MAIN: HEARTHBEAT[0m
+[0;32mI (117132) MAIN: ATH20 - Temp: 26.2, Hum: 51.9[0m
+[0;32mI (117212) MAIN: HEARTHBEAT[0m
+[0;32mI (118212) MAIN: HEARTHBEAT[0m
+[0;32mI (118312) MAIN: ATH20 - Temp: 26.3, Hum: 52.0[0m
+[0;32mI (118922) MAIN: BMP280 - Temp: 26.6, Press: 1009.6[0m
+[0;32mI (118952) MAIN: DISPLAY UPDATE[0m
+[0;32mI (119212) MAIN: HEARTHBEAT[0m
+[0;32mI (119452) MAIN: ATH20 - Temp: 26.3, Hum: 52.0[0m
+[0;32mI (120212) MAIN: HEARTHBEAT[0m
+[0;32mI (120582) MAIN: ATH20 - Temp: 26.3, Hum: 52.0[0m
+[0;32mI (121212) MAIN: HEARTHBEAT[0m
+[0;32mI (121762) MAIN: ATH20 - Temp: 26.2, Hum: 51.9[0m
+[0;32mI (122212) MAIN: HEARTHBEAT[0m
+[0;32mI (122942) MAIN: ATH20 - Temp: 26.2, Hum: 51.9[0m
+[0;32mI (123212) MAIN: HEARTHBEAT[0m
+[0;32mI (124062) MAIN: BMP280 - Temp: 26.6, Press: 1009.6[0m
+[0;32mI (124092) MAIN: DISPLAY UPDATE[0m
+[0;32mI (124212) MAIN: HEARTHBEAT[0m
+[0;32mI (124222) MAIN: ATH20 - Temp: 26.2, Hum: 51.9[0m
+[0;32mI (125212) MAIN: HEARTHBEAT[0m
+[0;32mI (125352) MAIN: ATH20 - Temp: 26.2, Hum: 51.9[0m
+[0;32mI (126212) MAIN: HEARTHBEAT[0m
+[0;32mI (126532) MAIN: ATH20 - Temp: 26.3, Hum: 51.7[0m
+[0;32mI (127212) MAIN: HEARTHBEAT[0m
+[0;32mI (127712) MAIN: ATH20 - Temp: 26.2, Hum: 51.7[0m
+[0;32mI (128212) MAIN: HEARTHBEAT[0m
+[0;32mI (128892) MAIN: ATH20 - Temp: 26.2, Hum: 51.7[0m
+[0;32mI (129202) MAIN: BMP280 - Temp: 26.6, Press: 1009.6[0m
+[0;32mI (129212) MAIN: HEARTHBEAT[0m
+[0;32mI (129232) MAIN: DISPLAY UPDATE[0m
+[0;32mI (130032) MAIN: ATH20 - Temp: 26.2, Hum: 51.7[0m
+[0;32mI (130212) MAIN: HEARTHBEAT[0m
+[0;32mI (131212) MAIN: HEARTHBEAT[0m
+[0;32mI (131232) MAIN: ATH20 - Temp: 26.3, Hum: 51.7[0m
+[0;32mI (132212) MAIN: HEARTHBEAT[0m
+[0;32mI (132412) MAIN: ATH20 - Temp: 26.2, Hum: 51.7[0m
+[0;32mI (133212) MAIN: HEARTHBEAT[0m
+[0;32mI (133592) MAIN: ATH20 - Temp: 26.3, Hum: 51.7[0m
+[0;32mI (134212) MAIN: HEARTHBEAT[0m
+[0;32mI (134342) MAIN: BMP280 - Temp: 26.6, Press: 1009.6[0m
+[0;32mI (134372) MAIN: DISPLAY UPDATE[0m
+[0;32mI (134722) MAIN: ATH20 - Temp: 26.3, Hum: 51.7[0m
+[0;32mI (135212) MAIN: HEARTHBEAT[0m
+[0;32mI (135852) MAIN: ATH20 - Temp: 26.3, Hum: 51.7[0m
+[0;32mI (136212) MAIN: HEARTHBEAT[0m
+[0;32mI (137032) MAIN: ATH20 - Temp: 26.3, Hum: 51.7[0m
+[0;32mI (137212) MAIN: HEARTHBEAT[0m
+[0;32mI (138212) MAIN: HEARTHBEAT[0m
+[0;32mI (138212) MAIN: ATH20 - Temp: 26.2, Hum: 51.8[0m
+[0;32mI (139212) MAIN: HEARTHBEAT[0m
+[0;32mI (139392) MAIN: ATH20 - Temp: 26.2, Hum: 51.8[0m
+[0;32mI (139522) MAIN: BMP280 - Temp: 26.6, Press: 1009.7[0m
+[0;32mI (139552) MAIN: DISPLAY UPDATE[0m
+[0;32mI (140212) MAIN: HEARTHBEAT[0m
+[0;32mI (140522) MAIN: ATH20 - Temp: 26.2, Hum: 51.8[0m
+[0;32mI (141212) MAIN: HEARTHBEAT[0m
+[0;32mI (141702) MAIN: ATH20 - Temp: 26.2, Hum: 51.7[0m
+[0;32mI (142212) MAIN: HEARTHBEAT[0m
+[0;32mI (142882) MAIN: ATH20 - Temp: 26.2, Hum: 51.6[0m
+[0;32mI (143212) MAIN: HEARTHBEAT[0m
+[0;32mI (144062) MAIN: ATH20 - Temp: 26.2, Hum: 51.4[0m
+[0;32mI (144212) MAIN: HEARTHBEAT[0m
+[0;32mI (144662) MAIN: BMP280 - Temp: 26.5, Press: 1009.6[0m
+[0;32mI (144692) MAIN: DISPLAY UPDATE[0m
+[0;32mI (145192) MAIN: ATH20 - Temp: 26.2, Hum: 51.4[0m
+[0;32mI (145212) MAIN: HEARTHBEAT[0m
+[0;32mI (146212) MAIN: HEARTHBEAT[0m
+[0;32mI (146322) MAIN: ATH20 - Temp: 26.2, Hum: 51.4[0m
+[0;32mI (147212) MAIN: HEARTHBEAT[0m
+[0;32mI (147502) MAIN: ATH20 - Temp: 26.2, Hum: 51.0[0m
+[0;32mI (148212) MAIN: HEARTHBEAT[0m
+[0;32mI (148662) MAIN: ATH20 - Temp: 26.2, Hum: 51.4[0m
+[0;32mI (149212) MAIN: HEARTHBEAT[0m
+[0;32mI (149782) MAIN: BMP280 - Temp: 26.5, Press: 1009.7[0m
+[0;32mI (149952) MAIN: ATH20 - Temp: 26.2, Hum: 51.9[0m
+[0;32mI (149972) MAIN: DISPLAY UPDATE[0m
+[0;32mI (150212) MAIN: HEARTHBEAT[0m
+[0;32mI (151072) MAIN: ATH20 - Temp: 26.2, Hum: 51.9[0m
+[0;32mI (151212) MAIN: HEARTHBEAT[0m
+[0;32mI (152212) MAIN: HEARTHBEAT[0m
+[0;32mI (152252) MAIN: ATH20 - Temp: 26.2, Hum: 52.2[0m
+[0;32mI (153212) MAIN: HEARTHBEAT[0m
+[0;32mI (153432) MAIN: ATH20 - Temp: 26.2, Hum: 52.3[0m
+[0;32mI (154212) MAIN: HEARTHBEAT[0m
+[0;32mI (154612) MAIN: ATH20 - Temp: 26.2, Hum: 52.3[0m
+[0;32mI (154922) MAIN: BMP280 - Temp: 26.5, Press: 1009.7[0m
+[0;32mI (155002) MAIN: DISPLAY UPDATE[0m
+[0;32mI (155212) MAIN: HEARTHBEAT[0m
+[0;32mI (155742) MAIN: ATH20 - Temp: 26.2, Hum: 52.3[0m
+[0;32mI (156212) MAIN: HEARTHBEAT[0m
+[0;32mI (157012) MAIN: ATH20 - Temp: 26.2, Hum: 52.0[0m
+[0;32mI (157212) MAIN: HEARTHBEAT[0m
+[0;32mI (158192) MAIN: ATH20 - Temp: 26.2, Hum: 51.9[0m
+[0;32mI (158212) MAIN: HEARTHBEAT[0m
+[0;32mI (159212) MAIN: HEARTHBEAT[0m
+[0;32mI (159382) MAIN: ATH20 - Temp: 26.3, Hum: 51.8[0m
+[0;32mI (160052) MAIN: BMP280 - Temp: 26.5, Press: 1009.7[0m
+[0;32mI (160082) MAIN: DISPLAY UPDATE[0m
+[0;32mI (160212) MAIN: HEARTHBEAT[0m
+[0;32mI (160502) MAIN: ATH20 - Temp: 26.3, Hum: 51.8[0m
+[0;32mI (161212) MAIN: HEARTHBEAT[0m
+[0;32mI (161632) MAIN: ATH20 - Temp: 26.3, Hum: 51.8[0m
+[0;32mI (162212) MAIN: HEARTHBEAT[0m
+[0;32mI (162812) MAIN: ATH20 - Temp: 26.2, Hum: 51.5[0m
+[0;32mI (163212) MAIN: HEARTHBEAT[0m
+[0;32mI (163992) MAIN: ATH20 - Temp: 26.2, Hum: 51.4[0m
+[0;32mI (164212) MAIN: HEARTHBEAT[0m
+[0;32mI (165162) MAIN: ATH20 - Temp: 26.2, Hum: 51.4[0m
+[0;32mI (165212) MAIN: HEARTHBEAT[0m
+[0;32mI (165292) MAIN: BMP280 - Temp: 26.6, Press: 1009.6[0m
+[0;32mI (165312) MAIN: DISPLAY UPDATE[0m
+[0;32mI (166212) MAIN: HEARTHBEAT[0m
+[0;32mI (166292) MAIN: ATH20 - Temp: 26.2, Hum: 51.4[0m
+[0;32mI (167212) MAIN: HEARTHBEAT[0m
+[0;32mI (167472) MAIN: ATH20 - Temp: 26.2, Hum: 51.5[0m
+[0;32mI (168212) MAIN: HEARTHBEAT[0m
+[0;32mI (168652) MAIN: ATH20 - Temp: 26.2, Hum: 51.5[0m
+[0;32mI (169212) MAIN: HEARTHBEAT[0m
+[0;32mI (169832) MAIN: ATH20 - Temp: 26.2, Hum: 51.5[0m
+[0;32mI (170212) MAIN: HEARTHBEAT[0m
+[0;32mI (170422) MAIN: BMP280 - Temp: 26.5, Press: 1009.6[0m
+[0;32mI (170452) MAIN: DISPLAY UPDATE[0m
+[0;32mI (170962) MAIN: ATH20 - Temp: 26.2, Hum: 51.5[0m
+[0;32mI (171212) MAIN: HEARTHBEAT[0m
+[0;32mI (172092) MAIN: ATH20 - Temp: 26.2, Hum: 51.5[0m
+[0;32mI (172212) MAIN: HEARTHBEAT[0m
+[0;32mI (173212) MAIN: HEARTHBEAT[0m
+[0;32mI (173272) MAIN: ATH20 - Temp: 26.2, Hum: 51.3[0m
+[0;32mI (174212) MAIN: HEARTHBEAT[0m
+[0;32mI (174452) MAIN: ATH20 - Temp: 26.2, Hum: 51.2[0m
+[0;32mI (175212) MAIN: HEARTHBEAT[0m
+[0;32mI (175562) MAIN: BMP280 - Temp: 26.5, Press: 1009.6[0m
+[0;32mI (175592) MAIN: DISPLAY UPDATE[0m
+[0;32mI (175712) MAIN: ATH20 - Temp: 26.2, Hum: 51.2[0m
+[0;32mI (176212) MAIN: HEARTHBEAT[0m
+[0;32mI (176842) MAIN: ATH20 - Temp: 26.2, Hum: 51.2[0m
+[0;32mI (177212) MAIN: HEARTHBEAT[0m
+[0;32mI (178022) MAIN: ATH20 - Temp: 26.2, Hum: 50.9[0m
+[0;32mI (178212) MAIN: HEARTHBEAT[0m
+[0;32mI (179202) MAIN: ATH20 - Temp: 26.2, Hum: 50.8[0m
+[0;32mI (179212) MAIN: HEARTHBEAT[0m
+[0;32mI (180212) MAIN: HEARTHBEAT[0m
+[0;32mI (180382) MAIN: ATH20 - Temp: 26.2, Hum: 50.7[0m
+[0;32mI (180702) MAIN: BMP280 - Temp: 26.5, Press: 1009.6[0m
+[0;32mI (180732) MAIN: DISPLAY UPDATE[0m
+[0;32mI (181212) MAIN: HEARTHBEAT[0m
+[0;32mI (181512) MAIN: ATH20 - Temp: 26.2, Hum: 50.7[0m
+[0;32mI (182212) MAIN: HEARTHBEAT[0m
+[0;32mI (182732) MAIN: ATH20 - Temp: 26.2, Hum: 50.6[0m
+[0;32mI (183212) MAIN: HEARTHBEAT[0m
+[0;32mI (183912) MAIN: ATH20 - Temp: 26.2, Hum: 50.5[0m
+[0;32mI (184212) MAIN: HEARTHBEAT[0m
+[0;32mI (185092) MAIN: ATH20 - Temp: 26.2, Hum: 50.5[0m
+[0;32mI (185212) MAIN: HEARTHBEAT[0m
+[0;32mI (185842) MAIN: BMP280 - Temp: 26.5, Press: 1009.7[0m
+[0;32mI (185872) MAIN: DISPLAY UPDATE[0m
+[0;32mI (186212) MAIN: HEARTHBEAT[0m
+[0;32mI (186222) MAIN: ATH20 - Temp: 26.2, Hum: 50.5[0m
+[0;32mI (187212) MAIN: HEARTHBEAT[0m
+[0;32mI (187352) MAIN: ATH20 - Temp: 26.2, Hum: 50.5[0m
+[0;32mI (188212) MAIN: HEARTHBEAT[0m
+[0;32mI (188532) MAIN: ATH20 - Temp: 26.3, Hum: 50.3[0m
+[0;32mI (189212) MAIN: HEARTHBEAT[0m
+[0;32mI (189712) MAIN: ATH20 - Temp: 26.2, Hum: 50.2[0m
+[0;32mI (190212) MAIN: HEARTHBEAT[0m
+[0;32mI (190892) MAIN: ATH20 - Temp: 26.3, Hum: 50.1[0m
+[0;32mI (191022) MAIN: BMP280 - Temp: 26.6, Press: 1009.7[0m
+[0;32mI (191052) MAIN: DISPLAY UPDATE[0m
+[0;32mI (191212) MAIN: HEARTHBEAT[0m
+[0;32mI (192022) MAIN: ATH20 - Temp: 26.3, Hum: 50.1[0m
+[0;32mI (192212) MAIN: HEARTHBEAT[0m
+[0;32mI (193202) MAIN: ATH20 - Temp: 26.3, Hum: 50.1[0m
+[0;32mI (193212) MAIN: HEARTHBEAT[0m
+[0;32mI (194212) MAIN: HEARTHBEAT[0m
+[0;32mI (194382) MAIN: ATH20 - Temp: 26.3, Hum: 50.1[0m
+[0;32mI (195212) MAIN: HEARTHBEAT[0m
+[0;32mI (195562) MAIN: ATH20 - Temp: 26.3, Hum: 50.2[0m
+[0;32mI (196162) MAIN: BMP280 - Temp: 26.6, Press: 1009.7[0m
+[0;32mI (196182) MAIN: DISPLAY UPDATE[0m
+[0;32mI (196212) MAIN: HEARTHBEAT[0m
+[0;32mI (196692) MAIN: ATH20 - Temp: 26.3, Hum: 50.2[0m
+[0;32mI (197212) MAIN: HEARTHBEAT[0m
+[0;32mI (197822) MAIN: ATH20 - Temp: 26.3, Hum: 50.2[0m
+[0;32mI (198212) MAIN: HEARTHBEAT[0m

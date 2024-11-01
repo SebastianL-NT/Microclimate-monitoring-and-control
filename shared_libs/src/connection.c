@@ -15,8 +15,8 @@ static int s_retry_num = 0;
 esp_mqtt_client_config_t mqtt_cfg = {
         .broker.address.uri = CONFIG_BROKER_URL,
     };
-
 static esp_mqtt_client_handle_t mqttClient;
+esp_err_t mqtt_ret;
 
 // PF
 static void event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data);
@@ -63,14 +63,15 @@ esp_err_t mqttClientStart() {
     mqttClient = esp_mqtt_client_init(&mqtt_cfg);
     /* The last argument may be used to pass data to the event handler, in this example mqtt_event_handler */
     esp_mqtt_client_register_event(mqttClient, ESP_EVENT_ANY_ID, mqtt_event_handler, NULL);
-    err_check(esp_mqtt_client_start(mqttClient));
+    esp_mqtt_client_start(mqttClient);
+
 
     return ESP_OK;
 }
 
 void mqttPublish(char *topic, char *data)
 {
-    esp_mqtt_client_publish(mqttClient, topic, data, strlen(data), 0, true);
+    mqtt_ret = esp_mqtt_client_publish(mqttClient, topic, data, strlen(data), 0, true);
 }
 
 // Private functions
