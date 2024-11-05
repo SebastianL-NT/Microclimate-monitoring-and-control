@@ -15,8 +15,9 @@ static int s_retry_num = 0;
 esp_mqtt_client_config_t mqtt_cfg = {
         .broker.address.uri = CONFIG_BROKER_URL,
     };
-static esp_mqtt_client_handle_t mqttClient;
+esp_mqtt_client_handle_t mqttClient;
 esp_err_t mqtt_ret;
+void (*mqttInterruptFunc)(esp_mqtt_event_handle_t);
 
 // PF
 static void event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data);
@@ -62,9 +63,8 @@ esp_err_t wifiInit() {
 esp_err_t mqttClientStart() {
     mqttClient = esp_mqtt_client_init(&mqtt_cfg);
     /* The last argument may be used to pass data to the event handler, in this example mqtt_event_handler */
-    esp_mqtt_client_register_event(mqttClient, ESP_EVENT_ANY_ID, mqtt_event_handler, NULL);
-    esp_mqtt_client_start(mqttClient);
-
+    err_check(esp_mqtt_client_register_event(mqttClient, ESP_EVENT_ANY_ID, mqtt_event_handler, NULL));
+    err_check(esp_mqtt_client_start(mqttClient));
 
     return ESP_OK;
 }
@@ -145,6 +145,9 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
         ESP_LOGI(TAG, "MQTT_EVENT_DATA");
         printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
         printf("DATA=%.*s\r\n", event->data_len, event->data);
+
+        mqttInterruptFunc(event);
+
         break;
     case MQTT_EVENT_ERROR:
         ESP_LOGI(TAG, "MQTT_EVENT_ERROR");

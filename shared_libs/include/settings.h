@@ -17,7 +17,6 @@ Author: https://github.com/SebastianL-NT
 
 // NORMAL GPIO SETTINGS
 #define PIN_LED 22 // GPIO22
-//#define PIN_AIR_EN 34
 
 // I2C SETTINGS
 #define I2C_PORT_NUM 0
@@ -30,7 +29,7 @@ Author: https://github.com/SebastianL-NT
 #define EXAMPLE_ESP_MAXIMUM_RETRY  10
 
 // MQTT Settings
-#define CONFIG_BROKER_URL "mqtt://some-ip/"
+//#define CONFIG_BROKER_URL "mqtt://some-ip/"
 
 // Task delays
 #define ATH20_DELAY 1000
