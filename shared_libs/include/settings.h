@@ -29,10 +29,10 @@ Author: https://github.com/SebastianL-NT
 #define EXAMPLE_ESP_MAXIMUM_RETRY  10
 
 // MQTT Settings
-//#define CONFIG_BROKER_URL "mqtt://some-ip/"
+#define CONFIG_BROKER_URL "mqtt://192.168.1.100/" // IP's of server where MQTT Broker is hosted
 
 // Task delays
-#define ATH20_DELAY 1000
+#define aht20_DELAY 1000
 #define BMP280_DELAY 5000
 #define BH1750_DELAY 1000
 

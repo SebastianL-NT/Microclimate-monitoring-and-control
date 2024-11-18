@@ -16,7 +16,7 @@ Core 1 - sensors, uart, led, gpio and other not time-based functions
 #include "nvs_flash.h"
 #include "main.h"
 #include "bmp280.h"
-#include "ath20.h"
+#include "aht20.h"
 #include "i2c.h"
 #include "connection.h"
 #include "esp_adc/adc_continuous.h"
@@ -39,7 +39,7 @@ static TaskHandle_t s_task_handle;
 static uint8_t adc_results[ADC_BUFFER_LEN] = {0};
 static adc_continuous_evt_cbs_t adc_cbs; // ?
 adc_cali_handle_t adc_cali_handle;*/
-float bmp280_temp, bmp280_press, ath20_temp, ath20_hum = 0;
+float bmp280_temp, bmp280_press, aht20_temp, aht20_hum = 0;
 SemaphoreHandle_t i2c_semaphore = NULL;
 int task_queue = 0;
 uint8_t dispLastRun = 0;
@@ -49,13 +49,14 @@ uint64_t uptime = 0;
 esp_err_t uartInit();
 void uartSend(void *uartTX);
 void hearthbeatLED(void *pvParameter);
-static void taskCheckATH20(void *pvParameter);
+static void taskCheckaht20(void *pvParameter);
 static void taskCheckBMP280(void *pvParameter);
 //static void taskCheckAIR(void *pvParameter);
 static void taskDisplay(void *pvParameter);
 void taskInitWifi(void *pvParameter);
 void initGPIOout(uint16_t pinNumber, uint32_t state);
 static bool IRAM_ATTR s_conv_done_cb(adc_continuous_handle_t handle, const adc_continuous_evt_data_t *edata, void *user_data);
+void mqttInterrupt(esp_mqtt_event_handle_t event);
 
 // Main
 void app_main()
@@ -69,7 +70,7 @@ void app_main()
 
     // Init I2C and related sensors (moved before WIFI just to have nice start-up screen longer)
     ESP_ERROR_CHECK(i2c_init(I2C_PORT_NUM));    // I2C Setup
-    ESP_ERROR_CHECK(ath20_init(I2C_PORT_NUM));  // Init ATH20
+    ESP_ERROR_CHECK(aht20_init(I2C_PORT_NUM));  // Init aht20
     ESP_ERROR_CHECK(bmp280_init(I2C_PORT_NUM)); // Init BMP280
     ESP_ERROR_CHECK(ssd1306_init()); // Init oled screen
     xTaskCreate(&task_ssd1306_display_clear, "ssd1306_display_clear", 2048, NULL, 6, NULL);
@@ -127,7 +128,7 @@ void app_main()
     vTaskDelay(100 / portTICK_PERIOD_MS);
 
     // Read data continuosly
-    xTaskCreatePinnedToCore(&taskCheckATH20, "taskCheckATH20", 2048, NULL, tskIDLE_PRIORITY, NULL, APP_CPU_NUM);
+    xTaskCreatePinnedToCore(&taskCheckaht20, "taskCheckaht20", 2048, NULL, tskIDLE_PRIORITY, NULL, APP_CPU_NUM);
     xTaskCreatePinnedToCore(&taskCheckBMP280, "taskCheckBMP280", 2048, NULL, tskIDLE_PRIORITY, NULL, APP_CPU_NUM);
     // xTaskCreatePinnedToCore(&taskCheckAIR, "taskCheckAIR", 2048, NULL, tskIDLE_PRIORITY, NULL, APP_CPU_NUM);
     xTaskCreatePinnedToCore(&taskDisplay, "taskDisplay", 2048, NULL, tskIDLE_PRIORITY, NULL, APP_CPU_NUM);
@@ -205,7 +206,7 @@ void hearthbeatLED(void *pvParameter)
 }*/
 
 // Tasks Functions
-static void taskCheckATH20(void *pvParameter)
+static void taskCheckaht20(void *pvParameter)
 {
     while (true)
     {
@@ -217,20 +218,20 @@ static void taskCheckATH20(void *pvParameter)
                 float humidity;
                 char message[6];
 
-                ath20_read(I2C_PORT_NUM, &temperature, &humidity);
-                ESP_LOGI(TAG, "ATH20 - Temp: %.1f, Hum: %.1f", temperature, humidity);
-                ath20_temp = temperature;
-                ath20_hum = humidity;
+                aht20_read(I2C_PORT_NUM, &temperature, &humidity);
+                ESP_LOGI(TAG, "aht20 - Temp: %.1f, Hum: %.1f", temperature, humidity);
+                aht20_temp = temperature;
+                aht20_hum = humidity;
 
                 sprintf(message, "%.1f", temperature);
-                mqttPublish("inside/ath20/temp", message);
+                mqttPublish("inside/aht20/temp", message);
                 sprintf(message, "%.1f", humidity);
-                mqttPublish("inside/ath20/hum", message);
+                mqttPublish("inside/aht20/hum", message);
 
                 dispLastRun = 0;
                 xSemaphoreGive(i2c_semaphore);
 
-                vTaskDelay(ATH20_DELAY / portTICK_PERIOD_MS);
+                vTaskDelay(aht20_DELAY / portTICK_PERIOD_MS);
             }
         }
     }
@@ -340,7 +341,7 @@ static void taskDisplay(void *pvParameter)
                 else
                     sprintf(mqtt_status, "Not Conn");
 
-                sprintf(char_array, "MQTT: %s\nActual reading\nTemp1: %.1f C\nTemp2: %.1f C\nPress: %.1fhPa\nHum: %.1f %%\nUP: %llu", mqtt_status, bmp280_temp, ath20_temp, bmp280_press, ath20_hum, uptime);
+                sprintf(char_array, "MQTT: %s\nActual reading\nTemp1: %.1f C\nTemp2: %.1f C\nPress: %.1fhPa\nHum: %.1f %%\nUP: %llu", mqtt_status, bmp280_temp, aht20_temp, bmp280_press, aht20_hum, uptime);
 
                 xTaskCreatePinnedToCore(&task_ssd1306_display_text, "displayText", 2048, (void *)char_array, tskIDLE_PRIORITY, NULL, APP_CPU_NUM);
                 //task_ssd1306_display_text((void *)char_array);
@@ -365,4 +366,28 @@ static void taskDisplay(void *pvParameter)
         //    ESP_LOGI(TAG, "Semaphore is NULL");
         //}
     }
+}
+
+// Interrupts
+void mqttInterrupt(esp_mqtt_event_handle_t event)
+{
+    char topic[65];
+    sprintf(topic, "%.*s", event->topic_len, event->topic);
+    char data[65];
+    sprintf(data, "%.*s", event->data_len, event->data);
+
+    ESP_LOGI(TAG, "%s", topic);
+    
+    /*if(strcmp(topic, TOPIC_HEATER_TEMP) == 0)
+    {
+        heater_temp_req = strtol(data, NULL, 10);
+    }
+    else if(strcmp(topic, TOPIC_HEATER_FAN) == 0)
+    {
+        heater_fan_req = strtol(data, NULL, 10); // 0 = disabled, 1 = enabled, other = error
+    }
+    else if(strcmp(topic, TOPIC_HEATER_TEMP_IN) == 0)
+    {
+        heater_temp_in = strtol(data, NULL, 10);
+    }*/
 }

@@ -31,4 +31,6 @@ extern esp_err_t mqtt_ret;
 extern esp_mqtt_client_handle_t mqttClient;
 extern void (*mqttInterruptFunc)(esp_mqtt_event_handle_t); // Pointer to a function for mqtt interrupt for subscribed data
 
+extern bool mqttInterruptEnabled;
+
 #endif

@@ -15,21 +15,22 @@ Core 1 - sensors, uart, led, gpio and other not time-based functions
 #include "driver/uart.h"
 #include "nvs_flash.h"
 #include "main.h"
-//#include "bmp280.h"
-//#include "ath20.h"
 #include "i2c.h"
 #include "connection.h"
 #include "onewire.h"
 #include "ds18x20.h"
 #include "driver/ledc.h"
+#include "math.h"
 
 // Local defines
 #define TOPIC_HEATER_TEMP "scada/heater_temp"
 #define TOPIC_HEATER_FAN "scada/heater_fan"
-#define TOPIC_HEATER_TEMP_IN "outside/ath20/temp"
+#define TOPIC_HEATER_TEMP_IN "outside/aht20/temp"
+#define TOPIC_HEATER_SCADA_EN "scada/heater_enable"
 #define PIN_FANCTRL 33
 #define PIN_TEMPOUT 23
 #define PIN_HEATERPWM 32
+#define SCADA_TIMEOUT 30
 
 // Variables
 static const char *TAG = "MAIN";
@@ -38,18 +39,18 @@ QueueHandle_t uart_queue;
 SemaphoreHandle_t i2c_semaphore = NULL;
 uint64_t uptime = 0;
 float heater_temp_in, heater_temp_out, heater_temp_req = 0;
-int heater_fan_status, heater_fan_req = 0; // Set of variables for heater
+int heater_fan_status, heater_fan_req, heater_fan_req_force, heater_enable = 0; // Set of variables for heater
 onewire_search_t onewire_search;
 onewire_addr_t temp_out_addr;
 ledc_timer_config_t gpio_pwm_timer_conf;
 ledc_channel_config_t gpio_pwm_channel_conf;
+uint64_t timer = 0;
+uint64_t scada_timeout = 0;
 
 // Functions prototypes
 esp_err_t uartInit();
 void uartSend(void *uartTX);
 void hearthbeatLED(void *pvParameter);
-//static void taskCheckATH20(void *pvParameter);
-//static void taskCheckBMP280(void *pvParameter);
 void taskInitWifi(void *pvParameter);
 void initGPIOout(uint16_t pinNumber, uint32_t state);
 static void taskControlHeater(void *pvParameter);
@@ -75,9 +76,9 @@ void app_main()
     gpio_pwm_channel_conf.hpoint = 0;  
 
     // INIT SECTION -----------------------------
-    vTaskDelay(1000 / portTICK_PERIOD_MS); // Just wait
-    initGPIOout(PIN_LED, 0);               // Init LED with state 0 (LED ENABLED)
-    initGPIOout(PIN_FANCTRL, 0);               // Init LED with state 0 (FAN DISABLED)
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
+    initGPIOout(PIN_LED, 0);
+    initGPIOout(PIN_FANCTRL, 0);
     uartInit();
     mqttInterruptFunc = mqttInterrupt; // Hook up func to pointer
     ESP_LOGI(TAG, "INIT START");
@@ -100,21 +101,19 @@ void app_main()
         vTaskDelay(500 / portTICK_PERIOD_MS);
         ESP_LOGE(TAG, "MQTT Retrying to connect");
     }
-    esp_mqtt_client_subscribe_single(mqttClient, TOPIC_HEATER_TEMP, 1); // Subscribe to topic
-    esp_mqtt_client_subscribe_single(mqttClient, TOPIC_HEATER_FAN, 1); // Same
+    mqttInterruptEnabled = true;
+    esp_mqtt_client_subscribe_single(mqttClient, TOPIC_HEATER_TEMP, 1);
+    esp_mqtt_client_subscribe_single(mqttClient, TOPIC_HEATER_FAN, 1);
     esp_mqtt_client_subscribe_single(mqttClient, TOPIC_HEATER_TEMP_IN, 1);
+    esp_mqtt_client_subscribe_single(mqttClient, TOPIC_HEATER_SCADA_EN, 1);
 
     temp_out_addr = onewire_search_next(&onewire_search, PIN_TEMPOUT);
     if(temp_out_addr == ONEWIRE_NONE)
     {
         ESP_LOGI(TAG, "Onewire no devices found");
     }
-    //else
-    //{
-    //    ESP_LOGI(TAG, "Onewire &lld", temp_out_addr);
-    //}
 
-    xTaskCreatePinnedToCore(&hearthbeatLED, "hearthbeatLED", 2048, NULL, tskIDLE_PRIORITY, NULL, APP_CPU_NUM); // Start of heartbeat LED
+    xTaskCreatePinnedToCore(&hearthbeatLED, "hearthbeatLED", 2048, NULL, tskIDLE_PRIORITY, NULL, APP_CPU_NUM);
 
     i2c_semaphore = xSemaphoreCreateBinary(); // Create semaphore to sync tasks (mostly to avoid interrupts between sensors and display)
     xSemaphoreGive(i2c_semaphore);
@@ -123,8 +122,6 @@ void app_main()
     vTaskDelay(100 / portTICK_PERIOD_MS);
 
     // Create tasks
-    //xTaskCreatePinnedToCore(&taskCheckATH20, "taskCheckATH20", 2048, NULL, tskIDLE_PRIORITY, NULL, APP_CPU_NUM);
-    //xTaskCreatePinnedToCore(&taskCheckBMP280, "taskCheckBMP280", 2048, NULL, tskIDLE_PRIORITY, NULL, APP_CPU_NUM);
     xTaskCreatePinnedToCore(&taskControlHeater, "taskControlHeater", 2048, NULL, tskIDLE_PRIORITY, NULL, APP_CPU_NUM);
     xTaskCreatePinnedToCore(&taskHeaterOutTemp, "taskHeaterOutTemp", 2048, NULL, tskIDLE_PRIORITY, NULL, APP_CPU_NUM);
 
@@ -135,6 +132,15 @@ void app_main()
         ESP_LOGI(TAG, "HEARTHBEAT");
         sprintf(uptime_str, "%llu", uptime);
         mqttPublish("heater/uptime", uptime_str);
+
+        // 
+        timer += 1;
+        if (scada_timeout <= timer)
+        {
+            heater_enable = 0;
+            heater_fan_req = 0;
+            heater_temp_req = 0;
+        }
     }
 }
 
@@ -142,7 +148,6 @@ void app_main()
 // UART Functions
 esp_err_t uartInit()
 {
-    // uart_config_t uart_settings;
     uart_settings.baud_rate = 115200;
     uart_settings.data_bits = UART_DATA_8_BITS;
     uart_settings.parity = UART_PARITY_DISABLE;
@@ -191,68 +196,6 @@ void hearthbeatLED(void *pvParameter)
 }
 
 // Tasks Functions
-/*static void taskCheckATH20(void *pvParameter)
-{
-    while (true)
-    {
-        if (i2c_semaphore != NULL)
-        {
-            if (xSemaphoreTake(i2c_semaphore, 1000 / portTICK_PERIOD_MS) == pdTRUE)
-            {
-                float temperature;
-                float humidity;
-                char message[6];
-
-                ath20_read(I2C_PORT_NUM, &temperature, &humidity);
-                ESP_LOGI(TAG, "ATH20 - Temp: %.1f, Hum: %.1f", temperature, humidity);
-                ath20_temp = temperature;
-                ath20_hum = humidity;
-
-                sprintf(message, "%.1f", temperature);
-                mqttPublish("heater/ath20/temp", message);
-                sprintf(message, "%.1f", humidity);
-                mqttPublish("heater/ath20/hum", message);
-
-                dispLastRun = 0;
-                xSemaphoreGive(i2c_semaphore);
-
-                vTaskDelay(ATH20_DELAY / portTICK_PERIOD_MS);
-            }
-        }
-    }
-}
-
-static void taskCheckBMP280(void *pvParameter)
-{
-    while (true)
-    {
-        if (i2c_semaphore != NULL)
-        {
-            if (xSemaphoreTake(i2c_semaphore, 1000 / portTICK_PERIOD_MS) == pdTRUE)
-            {
-                float temperature;
-                float pressure;
-                char message[7];
-
-                bmp280_read(I2C_PORT_NUM, &temperature, &pressure);
-                ESP_LOGI(TAG, "BMP280 - Temp: %.1f, Press: %.1f", temperature, pressure);
-                bmp280_temp = temperature;
-                bmp280_press = pressure;
-
-                sprintf(message, "%.1f", temperature);
-                mqttPublish("heater/bmp280/temp", message);
-                sprintf(message, "%.1f", pressure);
-                mqttPublish("heater/bmp280/press", message);
-
-                dispLastRun = 0;
-                xSemaphoreGive(i2c_semaphore);
-
-                vTaskDelay(BMP280_DELAY / portTICK_PERIOD_MS);
-            }
-        }
-    }
-}*/
-
 void taskInitWifi(void *pvParameter)
 {
     while (wifiInit() == ESP_FAIL)
@@ -264,36 +207,90 @@ void taskInitWifi(void *pvParameter)
 
 static void taskControlHeater(void *pvParameter)
 {
+    char sPower[4];
+    int K = 5;
+    float delta_temp;
+    int pwm = 0;
+    uint64_t timer = 0;
+    uint64_t time = 0;
+
     while (true)
     {
-        // TODO: Control for heater using simple K regulator.
-        float delta_temp = heater_temp_req - heater_temp_out; // 10 celsius should be equal 100% pwm 
-        int pwm = delta_temp * 100; // Min 0 (off), Max 100 (Full power)
-        if (pwm > 100) { pwm = 100; }
-        else if (pwm < 0) { pwm = 0; }
-        ESP_LOGI(TAG, "In %f Out %f PWM %d Delta %f", heater_temp_in, heater_temp_out, pwm, delta_temp);
-        //ledc_set_duty_and_update(LEDC_HIGH_SPEED_MODE, LEDC_CHANNEL_0, (uint32_t) ((1024 / 100) * pwm), 0);
+        if (heater_enable == 1)
+        {
+            if ((heater_temp_req > heater_temp_in) && (heater_fan_req == 0) && (timer == 0))
+            {
+                timer = time + 15000; // It is time that device will wait until enabling fan. It is for faster heater start-up
+            }
+
+            // PWM Calculating
+            delta_temp = heater_temp_req - heater_temp_out;
+            if (delta_temp > 1.0)
+            {
+                pwm = floor(((float) delta_temp * delta_temp)) * K;
+                if (pwm > 100 ) {pwm = 100;} else if (pwm < 0) {pwm = 0;}
+                if (time >= timer)
+                {
+                    heater_fan_req = 1;
+                    timer = 0;
+                }
+                else
+                {
+                    heater_fan_req = 0;
+                }
+            }
+            else if (delta_temp < -1.0)
+            {
+                pwm = 0;
+                if (((float) heater_temp_in - heater_temp_out) < 0)
+                {
+                    heater_fan_req = 1;
+                }
+                else
+                {
+                    heater_fan_req = 0;
+                }
+            }
+            else
+            {
+                heater_fan_req = 0;
+            }
+        }
+        else
+        {
+            pwm = 0;
+            heater_fan_req = 0;
+            timer = 0;
+        }
+
+        if (heater_fan_req_force == 1)
+        {
+            heater_fan_req = 1;
+        }
+
+        // Heater Control
         ledc_set_duty(LEDC_HIGH_SPEED_MODE, LEDC_CHANNEL_0, (uint32_t) ((1024 / 100) * pwm));
         ledc_update_duty(LEDC_HIGH_SPEED_MODE, LEDC_CHANNEL_0);
+        sprintf(sPower, "%d", pwm);
+        mqttPublish("heater/power", sPower);
 
-        //if (pwm > 10) { heater_fan_req = 1; } // TEMPORARY FOR TESTS
-        //else if (pwm < 10) { heater_fan_req = 0; } 
-
-        if(heater_fan_status != heater_fan_req) // Do some checks if status is not equal
-        { // TODO: Create GPIO control function
+        // Fan Control
+        if(heater_fan_status != heater_fan_req)
+        {
             if(heater_fan_req == 0) // disable fan
             {
-                if(gpio_set_level(PIN_FANCTRL, 0) == ESP_OK) { heater_fan_status = 0; }
+                if(gpio_set_level(PIN_FANCTRL, 0) == ESP_OK) { heater_fan_status = 0; mqttPublish("heater/fan_fb", "0");}
                 else { ESP_LOGE(TAG, "Cannot control FAN"); }
             }
             else if(heater_fan_req == 1) // enable fan
             {
-                if(gpio_set_level(PIN_FANCTRL, 1) == ESP_OK) { heater_fan_status = 1; }
+                if(gpio_set_level(PIN_FANCTRL, 1) == ESP_OK) { heater_fan_status = 1; mqttPublish("heater/fan_fb", "1"); }
                 else { ESP_LOGE(TAG, "Cannot control FAN"); }
             }
         }
 
         vTaskDelay(100 / portTICK_PERIOD_MS);
+        time = time + 100;
     }
 }
 
@@ -325,7 +322,12 @@ void mqttInterrupt(esp_mqtt_event_handle_t event)
     }
     else if(strcmp(topic, TOPIC_HEATER_FAN) == 0)
     {
-        heater_fan_req = strtol(data, NULL, 10); // 0 = disabled, 1 = enabled, other = error
+        heater_fan_req_force = strtol(data, NULL, 10); // 0 = disabled, 1 = enabled, other = error
+    }
+    else if(strcmp(topic, TOPIC_HEATER_SCADA_EN) == 0)
+    {
+        heater_enable = strtol(data, NULL, 10);
+        scada_timeout = timer + SCADA_TIMEOUT;
     }
     else if(strcmp(topic, TOPIC_HEATER_TEMP_IN) == 0)
     {

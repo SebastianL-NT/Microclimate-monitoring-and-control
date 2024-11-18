@@ -17,7 +17,7 @@ Core 1 - sensors, uart, led, gpio and other not time-based functions
 #include "nvs_flash.h"
 #include "main.h"
 #include "bmp280.h"
-#include "ath20.h"
+#include "aht20.h"
 #include "bh1750.h"
 #include "i2c.h"
 #include "connection.h"
@@ -32,11 +32,12 @@ uint64_t uptime = 0;
 // Functions prototypes
 esp_err_t uartInit();
 static void hearthbeatLED(void *pvParameter);
-static void taskCheckATH20(void *pvParameter);
+static void taskCheckaht20(void *pvParameter);
 static void taskCheckBMP280(void *pvParameter);
 void taskCheckBH1750(void *pvParameter);
 void taskInitWifi(void *pvParameter);
 void initGPIOout(uint16_t pinNumber, uint32_t state);
+void mqttInterrupt(esp_mqtt_event_handle_t event);
 
 // Main
 void app_main()
@@ -60,7 +61,7 @@ void app_main()
     taskInitWifi(NULL);
     mqttClientStart();  // Init MQTT Client
     ESP_ERROR_CHECK(i2c_init(I2C_PORT_NUM));    // I2C Setup
-    ESP_ERROR_CHECK(ath20_init(I2C_PORT_NUM));  // Init ATH20
+    ESP_ERROR_CHECK(aht20_init(I2C_PORT_NUM));  // Init aht20
     ESP_ERROR_CHECK(bmp280_init(I2C_PORT_NUM)); // Init BMP280
     bh1750 = bh1750_create(I2C_PORT_NUM, 0x5C); // Init DH1750
     bh1750_power_on(bh1750);
@@ -71,7 +72,7 @@ void app_main()
     // INIT END -------------------------------
 
     // Read data continuosly
-    xTaskCreatePinnedToCore(&taskCheckATH20, "taskCheckATH20", 2048, NULL, tskIDLE_PRIORITY, NULL, APP_CPU_NUM);
+    xTaskCreatePinnedToCore(&taskCheckaht20, "taskCheckaht20", 2048, NULL, tskIDLE_PRIORITY, NULL, APP_CPU_NUM);
     xTaskCreatePinnedToCore(&taskCheckBMP280, "taskCheckBMP280", 2048, NULL, tskIDLE_PRIORITY, NULL, APP_CPU_NUM);
     xTaskCreatePinnedToCore(&taskCheckBH1750, "taskCheckBH1750", 2048, NULL, tskIDLE_PRIORITY, NULL, APP_CPU_NUM);
 
@@ -129,7 +130,7 @@ static void hearthbeatLED(void *pvParameter)
 }
 
 // Tasks Functions
-static void taskCheckATH20(void *pvParameter)
+static void taskCheckaht20(void *pvParameter)
 {
     while (true)
     {
@@ -137,14 +138,14 @@ static void taskCheckATH20(void *pvParameter)
         float humidity;
         char message[6];
 
-        ath20_read(I2C_PORT_NUM, &temperature, &humidity);
-        ESP_LOGI(TAG, "ATH20 - Temp: %.1f, Hum: %.1f", temperature, humidity);
+        aht20_read(I2C_PORT_NUM, &temperature, &humidity);
+        ESP_LOGI(TAG, "aht20 - Temp: %.1f, Hum: %.1f", temperature, humidity);
         
         sprintf(message, "%.1f", temperature);
-        mqttPublish("outside/ath20/temp", message);
+        mqttPublish("outside/aht20/temp", message);
         sprintf(message, "%.1f", humidity);
-        mqttPublish("outside/ath20/hum", message);
-        vTaskDelay(ATH20_DELAY / portTICK_PERIOD_MS);
+        mqttPublish("outside/aht20/hum", message);
+        vTaskDelay(aht20_DELAY / portTICK_PERIOD_MS);
     }
 }
 
@@ -191,4 +192,28 @@ void taskCheckBH1750(void *pvParameter)
 
         vTaskDelay(BH1750_DELAY / portTICK_PERIOD_MS);
     }
+}
+
+// Interrupts
+void mqttInterrupt(esp_mqtt_event_handle_t event)
+{
+    /*char topic[65];
+    sprintf(topic, "%.*s", event->topic_len, event->topic);
+    char data[65];
+    sprintf(data, "%.*s", event->data_len, event->data);
+
+    //ESP_LOGI(TAG, "%s", topic);
+    
+    if(strcmp(topic, TOPIC_HEATER_TEMP) == 0)
+    {
+        heater_temp_req = strtol(data, NULL, 10);
+    }
+    else if(strcmp(topic, TOPIC_HEATER_FAN) == 0)
+    {
+        heater_fan_req = strtol(data, NULL, 10); // 0 = disabled, 1 = enabled, other = error
+    }
+    else if(strcmp(topic, TOPIC_HEATER_TEMP_IN) == 0)
+    {
+        heater_temp_in = strtol(data, NULL, 10);
+    }*/
 }
