@@ -63,7 +63,7 @@ void app_main()
     ESP_ERROR_CHECK(i2c_init(I2C_PORT_NUM));    // I2C Setup
     ESP_ERROR_CHECK(aht20_init(I2C_PORT_NUM));  // Init aht20
     ESP_ERROR_CHECK(bmp280_init(I2C_PORT_NUM)); // Init BMP280
-    bh1750 = bh1750_create(I2C_PORT_NUM, 0x5C); // Init DH1750
+    bh1750 = bh1750_create(I2C_PORT_NUM, 0x23); // Init DH1750 // or 0x5C if ADDR is connected to VCC
     bh1750_power_on(bh1750);
     bh1750_set_measure_mode(bh1750, BH1750_CONTINUE_1LX_RES);
 
@@ -145,7 +145,7 @@ static void taskCheckaht20(void *pvParameter)
         mqttPublish("outside/aht20/temp", message);
         sprintf(message, "%.1f", humidity);
         mqttPublish("outside/aht20/hum", message);
-        vTaskDelay(aht20_DELAY / portTICK_PERIOD_MS);
+        vTaskDelay(AHT20_DELAY / portTICK_PERIOD_MS);
     }
 }
 

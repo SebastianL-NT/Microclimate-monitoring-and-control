@@ -22,8 +22,9 @@ Author: https://github.com/SebastianL-NT
 #define I2C_PORT_NUM 0
 
 // WIFI Settings
-#define WIFI_SSID "Test-wifi"
-#define WIFI_PASSWORD "Test-pwd"
+//#define WIFI_SSID "Test-wifi"
+//#define WIFI_PASSWORD "Test-pwd"
+
 #define WIFI_CONNECTED_BIT BIT0
 #define WIFI_FAIL_BIT      BIT1
 #define EXAMPLE_ESP_MAXIMUM_RETRY  10
@@ -32,12 +33,9 @@ Author: https://github.com/SebastianL-NT
 #define CONFIG_BROKER_URL "mqtt://192.168.1.100/" // IP's of server where MQTT Broker is hosted
 
 // Task delays
-#define aht20_DELAY 1000
+#define AHT20_DELAY 1000
 #define BMP280_DELAY 5000
 #define BH1750_DELAY 1000
-
-// ADC Settings
-#define ADC_BUFFER_LEN 256
 
 // Display settings
 #define DISPLAY_HZ 0.2 // In Hertz (updates per second), Because I'm using same interface for sensors and display I need to keep my display at low Hz

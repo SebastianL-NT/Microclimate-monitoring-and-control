@@ -27,9 +27,15 @@ Core 1 - sensors, uart, led, gpio and other not time-based functions
 #define TOPIC_HEATER_FAN "scada/heater_fan"
 #define TOPIC_HEATER_TEMP_IN "outside/aht20/temp"
 #define TOPIC_HEATER_SCADA_EN "scada/heater_enable"
-#define PIN_FANCTRL 33
+#define TOPIC_HEATER_SCADA_TEMP_SEL "scada/temp_sel"
+#define TOPIC_HEATER_K "heater/gains/k"
+#define TOPIC_HEATER_TI "heater/gains/ti"
+#define TOPIC_HEATER_TD "heater/gains/td"
+#define TOPIC_INSIDE_AHT20_TEMP "inside/aht20/temp"
+#define TOPIC_INSIDE_BMP280_TEMP "inside/bmp280/temp"
+#define PIN_FANCTRL 18
 #define PIN_TEMPOUT 23
-#define PIN_HEATERPWM 32
+#define PIN_HEATERPWM 33
 #define SCADA_TIMEOUT 30
 
 // Variables
@@ -46,6 +52,12 @@ ledc_timer_config_t gpio_pwm_timer_conf;
 ledc_channel_config_t gpio_pwm_channel_conf;
 uint64_t timer = 0;
 uint64_t scada_timeout = 0;
+float K = 1; // Gains for PID, to allow changing it via MQTT
+float Ti = 1;
+float Td = 1;
+float heater_temp_select = 0;
+float inside_temp_aht20 = 0;
+float inside_temp_bmp280 = 0;
 
 // Functions prototypes
 esp_err_t uartInit();
@@ -106,6 +118,12 @@ void app_main()
     esp_mqtt_client_subscribe_single(mqttClient, TOPIC_HEATER_FAN, 1);
     esp_mqtt_client_subscribe_single(mqttClient, TOPIC_HEATER_TEMP_IN, 1);
     esp_mqtt_client_subscribe_single(mqttClient, TOPIC_HEATER_SCADA_EN, 1);
+    esp_mqtt_client_subscribe_single(mqttClient, TOPIC_HEATER_SCADA_TEMP_SEL, 1);
+    esp_mqtt_client_subscribe_single(mqttClient, TOPIC_HEATER_K, 1);
+    esp_mqtt_client_subscribe_single(mqttClient, TOPIC_HEATER_TI, 1);
+    esp_mqtt_client_subscribe_single(mqttClient, TOPIC_HEATER_TD, 1);
+    esp_mqtt_client_subscribe_single(mqttClient, TOPIC_INSIDE_AHT20_TEMP, 1);
+    esp_mqtt_client_subscribe_single(mqttClient, TOPIC_INSIDE_BMP280_TEMP, 1);
 
     temp_out_addr = onewire_search_next(&onewire_search, PIN_TEMPOUT);
     if(temp_out_addr == ONEWIRE_NONE)
@@ -207,60 +225,88 @@ void taskInitWifi(void *pvParameter)
 
 static void taskControlHeater(void *pvParameter)
 {
-    char sPower[4];
-    int K = 5;
-    float delta_temp;
-    int pwm = 0;
-    uint64_t timer = 0;
-    uint64_t time = 0;
+    //char sDebug[65];
+    char sPower[8];
+    float pwm = 0;
+    float error[3];
+    error[0] = 0;
+    error[1] = 0;
+    float dt = 0.1; // Time differential in seconds
+    float A[2];
+    float Ad[3];
+    float d[2], fd;
+    int N = 3;
+    float tau, alpha;
+    float PI;
+    float D = 0;
+    float heater_temp_req_last = 0;
+    
+
+    K = 19.71;
+    Ti = 28.722;
+    Td = 7.8105;
+
+    // Pre-calc all contants
+    A[1] = 1 + (dt / Ti); Ad[2] = Td / dt;
+    A[0] = (-1); Ad[1] = (-2)*Td / dt;
+    Ad[0] = (Td / dt);
+    tau = (float) Td / N; // IIR Filter time constant
+    alpha = dt / (2*tau);
+
+    // Zeroing arrays
+    d[1] = 0;
+    d[0] = 0;
+    fd = 0;
 
     while (true)
     {
         if (heater_enable == 1)
         {
-            if ((heater_temp_req > heater_temp_in) && (heater_fan_req == 0) && (timer == 0))
+            //////// PID Regulator with derivative filter
+            if (heater_temp_select == 1)
             {
-                timer = time + 15000; // It is time that device will wait until enabling fan. It is for faster heater start-up
+                error[2] = heater_temp_req - ((inside_temp_aht20 + inside_temp_bmp280 + 0.01)/2);
+            } else {
+                error[2] = heater_temp_req - heater_temp_out;
             }
 
-            // PWM Calculating
-            delta_temp = heater_temp_req - heater_temp_out;
-            if (delta_temp > 1.0)
+            if (heater_temp_req_last != heater_temp_req) // To prevent sudden PWM hops while changing setpoint, we will reset last errors.
             {
-                pwm = floor(((float) delta_temp * delta_temp)) * K;
-                if (pwm > 100 ) {pwm = 100;} else if (pwm < 0) {pwm = 0;}
-                if (time >= timer)
-                {
-                    heater_fan_req = 1;
-                    timer = 0;
-                }
-                else
-                {
-                    heater_fan_req = 0;
-                }
+                error[1] = error[2];
+                error[0] = error[2];
+                heater_temp_req_last = heater_temp_req;
             }
-            else if (delta_temp < -1.0)
-            {
-                pwm = 0;
-                if (((float) heater_temp_in - heater_temp_out) < 0)
-                {
-                    heater_fan_req = 1;
-                }
-                else
-                {
-                    heater_fan_req = 0;
-                }
-            }
-            else
-            {
-                heater_fan_req = 0;
-            }
+            // PI Section
+            PI = A[1] * error[2]
+                + A[0] * error[1];
+            // D Section + IIR Filter
+            d[0] = d[1];
+            d[1] = Ad[2] * error[2] + Ad[1] * error[1] + Ad[0] * error[0];
+            fd = D;
+            D = ((alpha) / (alpha + 1)) * (d[1] + d[0]) - ((alpha - 1) / (alpha + 1)) * fd;
+            // Calculating PWM
+            pwm = pwm + K * (PI + D);
+
+            error[0] = error[1];
+            error[1] = error[2];
+
+            // Filtering
+            if (pwm > 100 ) {pwm = 100.0;}
+            else if (pwm < 0) {pwm = 0.0;} // Boundries control for PWM and limits for Integral
+            if (error[2] < 0) {pwm = 0.0;}
+
+            //sprintf(sDebug, "%f, ", );
+            //mqttPublish("heater/debug", sDebug);
+
+            heater_fan_req = 1;
         }
         else
         {
             pwm = 0;
+            //pwm_prev = 0;
+            error[0] = 0;
+            error[1] = 0;
             heater_fan_req = 0;
-            timer = 0;
         }
 
         if (heater_fan_req_force == 1)
@@ -269,9 +315,9 @@ static void taskControlHeater(void *pvParameter)
         }
 
         // Heater Control
-        ledc_set_duty(LEDC_HIGH_SPEED_MODE, LEDC_CHANNEL_0, (uint32_t) ((1024 / 100) * pwm));
+        ledc_set_duty(LEDC_HIGH_SPEED_MODE, LEDC_CHANNEL_0, (uint32_t) ((1024 / 100) * floor(pwm)));
         ledc_update_duty(LEDC_HIGH_SPEED_MODE, LEDC_CHANNEL_0);
-        sprintf(sPower, "%d", pwm);
+        sprintf(sPower, "%d", (int) floor(pwm));
         mqttPublish("heater/power", sPower);
 
         // Fan Control
@@ -289,8 +335,7 @@ static void taskControlHeater(void *pvParameter)
             }
         }
 
-        vTaskDelay(100 / portTICK_PERIOD_MS);
-        time = time + 100;
+        vTaskDelay((dt*1000) / portTICK_PERIOD_MS);
     }
 }
 
@@ -332,5 +377,21 @@ void mqttInterrupt(esp_mqtt_event_handle_t event)
     else if(strcmp(topic, TOPIC_HEATER_TEMP_IN) == 0)
     {
         heater_temp_in = strtol(data, NULL, 10);
+    }
+    else if(strcmp(topic, TOPIC_HEATER_K) == 0)
+    {
+        K = strtol(data, NULL, 10);
+    }
+    else if(strcmp(topic, TOPIC_HEATER_SCADA_TEMP_SEL) == 0)
+    {
+        heater_temp_select = strtol(data, NULL, 10);
+    }
+    else if(strcmp(topic, TOPIC_INSIDE_AHT20_TEMP) == 0)
+    {
+        inside_temp_aht20 = strtol(data, NULL, 10);
+    }
+    else if(strcmp(topic, TOPIC_INSIDE_BMP280_TEMP) == 0)
+    {
+        inside_temp_bmp280 = strtol(data, NULL, 10);
     }
 }

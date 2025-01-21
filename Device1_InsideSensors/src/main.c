@@ -231,7 +231,7 @@ static void taskCheckaht20(void *pvParameter)
                 dispLastRun = 0;
                 xSemaphoreGive(i2c_semaphore);
 
-                vTaskDelay(aht20_DELAY / portTICK_PERIOD_MS);
+                vTaskDelay(AHT20_DELAY / portTICK_PERIOD_MS);
             }
         }
     }
