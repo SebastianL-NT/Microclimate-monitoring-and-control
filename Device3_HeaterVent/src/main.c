@@ -231,16 +231,16 @@ static void taskControlHeater(void *pvParameter)
     float error[3];
     error[0] = 0;
     error[1] = 0;
-    float dt = 0.1; // Time differential in seconds
+    float dt = 0.5; // Time differential in seconds
     float A[2];
     float Ad[3];
     float d[2], fd;
+    //float L, T; 
     int N = 3;
     float tau, alpha;
     float PI;
     float D = 0;
     float heater_temp_req_last = 0;
-    
 
     K = 19.71;
     Ti = 28.722;
@@ -265,10 +265,12 @@ static void taskControlHeater(void *pvParameter)
             //////// PID Regulator with derivative filter
             if (heater_temp_select == 1)
             {
-                error[2] = heater_temp_req - ((inside_temp_aht20 + inside_temp_bmp280 + 0.01)/2);
+                //error[2] = heater_temp_req - ((inside_temp_aht20 + inside_temp_bmp280 + 0.01)/2);
+                error[2] = heater_temp_req - (inside_temp_aht20 + 0.01);
             } else {
                 error[2] = heater_temp_req - heater_temp_out;
             }
+
 
             if (heater_temp_req_last != heater_temp_req) // To prevent sudden PWM hops while changing setpoint, we will reset last errors.
             {
@@ -293,10 +295,7 @@ static void taskControlHeater(void *pvParameter)
             // Filtering
             if (pwm > 100 ) {pwm = 100.0;}
             else if (pwm < 0) {pwm = 0.0;} // Boundries control for PWM and limits for Integral
-            if (error[2] < 0) {pwm = 0.0;}
-
-            //sprintf(sDebug, "%f, ", );
-            //mqttPublish("heater/debug", sDebug);
+            //if (error[2] < 0) {pwm = 0.0;}
 
             heater_fan_req = 1;
         }

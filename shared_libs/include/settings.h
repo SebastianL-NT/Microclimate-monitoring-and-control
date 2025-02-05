@@ -24,7 +24,6 @@ Author: https://github.com/SebastianL-NT
 // WIFI Settings
 //#define WIFI_SSID "Test-wifi"
 //#define WIFI_PASSWORD "Test-pwd"
-
 #define WIFI_CONNECTED_BIT BIT0
 #define WIFI_FAIL_BIT      BIT1
 #define EXAMPLE_ESP_MAXIMUM_RETRY  10
