@@ -1,0 +1,20 @@
+{
+	"folders": [
+		{
+			"name": "Device1_InsideSensors",
+			"path": "Device1_InsideSensors"
+		},
+		{
+			"name": "Device3_HeaterVent",
+			"path": "Device3_HeaterVent"
+		},
+		{
+			"name": "Device2_OutsideSensors",
+			"path": "Device2_OutsideSensors"
+		},
+		{
+			"path": "shared_libs"
+		}
+	],
+	"settings": {}
+}
